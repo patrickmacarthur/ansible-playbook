@@ -1,0 +1,33 @@
+development_packages:
+  - build-essential
+dev: dev
+grp_sudo: sudo
+pkg_bind_utils: bind9utils
+pkg_gstreamer: gstreamer1.0
+pkg_keepass2: keepass2
+pkg_latex_base: texlive-latex-base
+pkg_latex_extra: texlive-latex-extra
+pkg_latex_recommended: texlive-latex-recommended
+pkg_lightning: xul-ext-lightning
+pkg_lightning_gdata: xul-ext-gdata-provider
+pkg_network_manager_openvpn: network-manager-openvpn-gnome
+pkg_openssh_clients: openssh-client
+pkg_rake: rake-compiler
+pkg_ruby_rails: ruby-rails
+pkg_rxvt_unicode: rxvt-unicode-256color
+pkg_saxon: libsaxon-java
+pkg_texlive_base: texlive-base
+pkg_texlive_fonts: texlive-fonts-recommended
+pkg_texlive_fontutils: texlive-font-utils
+pkg_texlive_generic: texlive-generic-recommended
+pkg_texlive_publishers: texlive-publishers
+pkg_texlive_science: texlive-science
+pkg_vim: vim-gnome
+pkg_wireshark: wireshark-qt
+pkg_xorg_font_utils: xfonts-utils
+pkg_xorg_input: xserver-xorg-input
+pkg_xorg_server_utils: x11-xserver-utils
+pkg_xorg_server: xserver-xorg
+pkg_xorg_video: xserver-xorg-video
+polkitd_user: root
+svc_display_mgr: gdm

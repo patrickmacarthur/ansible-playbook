@@ -1,0 +1,169 @@
+---
+# file: roles/server/tasks/main.yml
+#
+# All tasks to be done for all server systems, but not desktop systems,
+# go here.
+#
+
+- name: Install server packages
+  package: name={{ item }} state=present
+  become: yes
+  with_items:
+    - firewalld
+    - "{{ pkg_log_monitor }}"
+    - rsnapshot
+    - "{{ pkg_unattended_upgrades }}"
+  tags:
+    - packages
+    - server
+    - rsnapshot
+
+- name: Install setroubleshoot-server
+  package: name=setroubleshoot-server state=present
+  notify: Reload auditd
+  when: "'redhat' in ansible_os_family|lower"
+  tags:
+    - packages
+    - server
+
+- name: Remove wireless firmware packages
+  package: name={{ item }} state=absent
+  become: yes
+  with_items:
+    - iwl100-firmware
+    - iwl105-firmware
+    - iwl135-firmware
+    - iwl1000-firmware
+    - iwl2000-firmware
+    - iwl2030-firmware
+    - iwl3160-firmware
+    - iwl3945-firmware
+    - iwl4965-firmware
+    - iwl5000-firmware
+    - iwl5150-firmware
+    - iwl6000-firmware
+    - iwl6000g2a-firmware
+    - iwl6000g2b-firmware
+    - iwl6050-firmware
+    - iwl7260-firmware
+  when: "'redhat' in ansible_os_family|lower"
+  tags:
+    - packages
+    - server
+
+- name: Install rsnapshot config file
+  copy:
+    src: rsnapshot.conf
+    dest: /etc/rsnapshot.conf
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - configuration
+    - rsnapshot
+    - server
+
+- name: Hourly crontab entry for rsnapshot
+  become: yes
+  cron:
+    name: "rsnapshot hourly"
+    cron_file: rsnapshot
+    user: root
+    state: present
+    minute: 0
+    hour: "*/4"
+    job: /usr/bin/rsnapshot hourly
+  tags:
+    - configuration
+    - server
+    - rsnapshot
+
+- name: Daily crontab entry for rsnapshot
+  become: yes
+  cron:
+    name: "rsnapshot daily"
+    cron_file: rsnapshot
+    user: root
+    state: present
+    minute: 50
+    hour: 23
+    job: /usr/bin/rsnapshot daily
+  tags:
+    - configuration
+    - server
+    - rsnapshot
+
+- name: Weekly crontab entry for rsnapshot
+  become: yes
+  cron:
+    name: "rsnapshot weekly"
+    cron_file: rsnapshot
+    user: root
+    state: present
+    minute: 0
+    hour: 22
+    weekday: 6
+    job: /usr/bin/rsnapshot weekly
+  tags:
+    - configuration
+    - server
+    - rsnapshot
+
+- name: Alert on SELinux-related issues
+  lineinfile:
+    dest: /var/lib/setroubleshoot/email_alert_recipients
+    line: "{{ email }}"
+    create: yes
+  when: "'redhat' in ansible_os_family|lower"
+  tags:
+    - configuration
+    - server
+
+- name: Enable firewalld
+  service: name=firewalld state=started enabled=yes
+  tags:
+    - firewall
+    - server
+    - services
+
+- name: Add interfaces to public zone
+  firewalld:
+    state: enabled
+    interface: eth0
+    zone: public
+    permanent: yes
+    immediate: yes
+  tags:
+    - configuration
+    - firewall
+    - server
+
+- name: Create localisp zone
+  command: firewall-cmd --permanent --new-zone=localisp
+  args:
+    creates: /etc/firewalld/zones/localisp.xml
+  notify: Reload firewalld
+  tags:
+    - configuration
+    - firewall
+    - server
+
+# We must flush handlers to reload firewalld if we created the localisp zone
+# Otherwise, the zone won't exist when we try to add sources to it below
+- meta: flush_handlers
+
+- name: add local ISP IP ranges to localisp zone
+  firewalld:
+    permanent: yes
+    immediate: yes
+    state: enabled
+    source: "{{ item }}"
+    zone: localisp
+  with_items: "{{ allowed_ipv4_ranges }}"
+  tags:
+    - configuration
+    - firewall
+    - server
+
+- include: fail2ban.yml
+- include: ssh.yml

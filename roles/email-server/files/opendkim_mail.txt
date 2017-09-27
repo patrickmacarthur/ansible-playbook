@@ -1,0 +1,2 @@
+mail._domainkey IN      TXT     ( "v=DKIM1; k=rsa; t=y; "
+          "p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQD5f2R8/OHDIFUVEcnFy3ry7qCJ+LtskR192QxvaNSCXdyqWiTZqrcqwBeTS5NvM2f5SHBUVConJlzdCCRAf84L66ocELdP+hnU0Ix+pFLPOKNiy0oyllDnMlpDI97LpOn+TjAy9UkkhXGcZF3ZMDKuNH7ioonmIMDjlEmYLUPFGQIDAQAB" )  ; ----- DKIM key mail for patrickmacarthur.net

@@ -1,0 +1,29 @@
+---
+- name: Install fail2ban package
+  package: name={{ item }} state=present
+  with_items:
+    - "{{ pkg_fail2ban }}"
+  tags:
+    - packages
+    - fail2ban
+    - server
+
+- name: Install fail2ban local configuration
+  copy:
+    src: jail.local
+    dest: /etc/fail2ban/jail.local
+    owner: root
+    group: root
+    mode: 0644
+  notify: Reload fail2ban
+  tags:
+    - configuration
+    - fail2ban
+    - server
+
+- name: Enable fail2ban service
+  service: name=fail2ban state=started enabled=yes
+  tags:
+    - services
+    - fail2ban
+    - server

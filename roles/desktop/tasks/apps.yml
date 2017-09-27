@@ -1,0 +1,34 @@
+---
+# file: roles/desktop/tasks/apps.yml
+- name: Install media applications
+  package: name={{ item }} state=present
+  with_items:
+    - "{{ pkg_gstreamer }}-plugins-bad"
+    - "{{ pkg_gstreamer }}-plugins-good"
+    - "{{ pkg_gstreamer }}-plugins-ugly"
+    - rhythmbox
+    - totem
+  when: media
+  tags:
+    - packages
+
+- name: Install Steam
+  package: name=steam state=present
+  when: games
+  tags:
+    - packages
+
+# TODO: configure keybinding for keepass
+# Set keybinding via dconf/gsettings key:
+# /org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/{binding,command}
+# May require custom ansible module for idempotency
+
+- name: Install ~/.Xresources
+  copy:
+    src: Xresources
+    dest: "{{ homedir }}/.Xresources"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0644
+  tags:
+    - homedir

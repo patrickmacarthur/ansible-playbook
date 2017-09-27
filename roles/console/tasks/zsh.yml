@@ -1,0 +1,25 @@
+---
+# file: roles/console/tasks/zsh.yml
+- name: Install zsh configuration directory
+  copy:
+    dest: "{{ homedir }}"
+    src: ".zsh"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0644
+  tags:
+    - homedir
+
+- name: Install zsh startup scripts
+  copy:
+    dest: "{{ homedir }}/.{{ item }}"
+    src: "{{ item }}"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0644
+  with_items:
+    - zshrc
+    - zprofile
+    - zlogin
+  tags:
+    - homedir

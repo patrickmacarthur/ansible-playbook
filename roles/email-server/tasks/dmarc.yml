@@ -1,0 +1,105 @@
+---
+- name: Install opendmarc
+  package:
+    name: opendmarc
+    state: present
+  tags:
+    - dmarc
+    - email
+    - packages
+
+- name: opendmarc configuration
+  template:
+    src: opendmarc.conf.j2
+    dest: /etc/opendmarc.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart opendmarc
+  tags:
+    - configuration
+    - dmarc
+    - email
+
+- name: opendmarc config directory
+  file:
+    dest: /etc/opendmarc
+    state: directory
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - dmarc
+    - email
+
+- name: opendmarc ignored hosts
+  template:
+    src: opendmarc.ignore.hosts.j2
+    dest: /etc/opendmarc/ignore.hosts
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart opendmarc
+  tags:
+    - configuration
+    - dmarc
+    - email
+
+- name: Start opendmarc
+  service:
+    name: opendmarc
+    state: started
+    enabled: yes
+  tags:
+    - dmarc
+    - email
+    - services
+
+- name: create opendmarc mysql database
+  mysql_db:
+    name: opendmarc
+    state: present
+    login_user: root
+    login_password: "{{ mysql_password }}"
+  tags:
+    - database
+    - dmarc
+    - email
+
+- name: create opendmarc mysql user
+  mysql_user:
+    name: opendmarc
+    password: "{{ opendmarc_database_password }}"
+    priv: "opendmarc.*:ALL"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_password }}"
+  tags:
+    - database
+    - dmarc
+    - email
+
+- name: dmarc report script
+  template:
+    src: dmarc_report_script.j2
+    dest: /usr/local/sbin/dmarc_report_script
+    owner: root
+    group: opendmarc
+    mode: 0750
+  tags:
+    - cron
+    - dmarc
+    - email
+
+- name: dmarc cron job
+  cron:
+    name: send dmarc reports
+    cron_file: dmarc
+    hour: 0
+    minute: 1
+    user: opendmarc
+    job: /usr/local/sbin/dmarc_report_script
+  tags:
+    - cron
+    - dmarc
+    - email

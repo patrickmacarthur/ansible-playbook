@@ -1,0 +1,46 @@
+---
+# roles/email-server/tasks/firewall.yml
+# Insert firewall rules for e-mail
+- name: Install mail services into firewalld
+  copy:
+    src: firewalld/{{ item }}.xml
+    dest: /etc/firewalld/services/{{ item }}.xml
+    owner: root
+    group: root
+    mode: 0640
+  with_items:
+    - submission
+    - sieve
+  notify: Reload firewalld
+  tags:
+    - mail
+    - configuration
+    - firewall
+
+- name: Open mailserver ports for IPv4
+  firewalld:
+    permanent: yes
+    state: enabled
+    service: "{{ item }}"
+    zone: localisp
+  with_items:
+    - imaps
+    - sieve
+    - submission
+  notify: Reload firewalld
+  tags:
+    - mail
+    - configuration
+    - firewall
+
+- name: Open port 25 globally
+  firewalld:
+    permanent: yes
+    state: enabled
+    service: smtp
+    zone: public
+  notify: Reload firewalld
+  tags:
+    - mail
+    - configuration
+    - firewall

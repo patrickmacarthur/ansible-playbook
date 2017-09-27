@@ -1,0 +1,28 @@
+---
+- name: Install required packages
+  package: name={{ item }} state=installed
+  with_items:
+    - "{{ pkg_clamd }}"
+    - clamav-milter
+    - "{{ pkg_dovecot }}"
+    - dovecot-antispam
+    - "{{ pkg_dovecot_managesieved }}"
+    - "{{ pkg_dovecot_sieve }}"
+    - opendkim
+    - "{{ pkg_razor }}"
+    - postfix
+    - "{{ pkg_postfix_doc }}"
+    - postfix-policyd-spf-python
+    - spamassassin
+    - "{{ pkg_spamass_milter }}"
+  tags:
+    - packages
+    - mail
+
+- include: opendkim.yml
+- include: dmarc.yml
+- include: spamassassin.yml
+- include: clamav.yml
+- include: dovecot.yml
+- include: postfix.yml
+- include: firewall.yml

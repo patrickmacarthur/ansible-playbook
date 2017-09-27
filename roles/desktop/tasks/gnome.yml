@@ -1,0 +1,18 @@
+---
+# file: roles/desktop/tasks/gnome.yml
+- name: Ensure GNOME environment is installed
+  yum: name=@gnome-desktop-environment state=present
+  when: ansible_os_family == "RedHat"
+  tags:
+    - packages
+
+- name: Ensure GNOME environment is installed
+  package: name=gnome-core state=present
+  when: ansible_distribution == "Debian"
+  tags:
+    - packages
+
+- name: Enable gdm.service at startup
+  service: name={{ svc_display_mgr }} state=started
+  tags:
+    - services

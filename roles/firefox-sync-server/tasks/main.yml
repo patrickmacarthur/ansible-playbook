@@ -1,0 +1,203 @@
+---
+# tasks file for roles/firefox-sync-server
+- name: Install prerequisite packages
+  become: yes
+  package: name={{ item }} state=present
+  with_items:
+    - "{{ development_packages }}"
+    - "{{ pkg_mod_wsgi }}"
+    - python
+    - python-{{ dev }}
+    - "{{ pkg_virtualenv }}"
+  notify: restart apache web server
+  tags:
+    - packages
+    - server
+    - syncserver
+
+- name: Create Firefox Sync group
+  become: yes
+  group:
+    name: syncserver
+    state: present
+    system: yes
+  tags:
+    - configuration
+    - syncserver
+
+- name: Create Firefox Sync user
+  become: yes
+  user:
+    name: syncserver
+    state: present
+    comment: "Firefox Sync user"
+    home: /opt/mozilla-services/syncserver
+    createhome: no
+    group: syncserver
+    system: yes
+  tags:
+    - configuration
+    - syncserver
+
+- name: Create firefox sync checkout directory
+  become: yes
+  file:
+    dest: /opt/mozilla-services
+    state: directory
+    owner: root
+    group: syncserver
+    mode: 0755
+  tags:
+    - configuration
+    - server
+    - syncserver
+
+- name: Clone Firefox Sync repository
+  become: yes
+  git:
+    repo: https://github.com/mozilla-services/syncserver
+    dest: /opt/mozilla-services/syncserver
+    version: master
+  tags:
+    - packages
+    - server
+    - syncserver
+
+- name: Build Firefox sync environment
+  become: yes
+  make:
+    chdir: /opt/mozilla-services/syncserver
+    target: build
+  tags:
+    - packages
+    - server
+    - syncserver
+
+- name: Create firefox sync config directory
+  become: yes
+  file:
+    dest: /etc/mozilla-services
+    state: directory
+    owner: root
+    group: syncserver
+    mode: 0750
+  tags:
+    - configuration
+    - server
+    - syncserver
+
+- name: Firefox sync configuration file
+  become: yes
+  template:
+    src: syncserver.ini.j2
+    dest: /etc/mozilla-services/syncserver.ini
+    owner: root
+    group: syncserver
+    mode: 0640
+  tags:
+    - configuration
+    - server
+    - syncserver
+
+- name: Create firefox sync cache directory
+  become: yes
+  file:
+    dest: /var/cache/syncserver
+    state: directory
+    owner: syncserver
+    group: syncserver
+    mode: 0700
+  tags:
+    - configuration
+    - server
+    - syncserver
+
+- name: Firefox sync WSGI file
+  become: yes
+  template:
+    src: syncserver.wsgi.j2
+    dest: /var/www/syncserver.wsgi
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - configuration
+    - server
+    - syncserver
+
+- name: Firefox sync Apache config file
+  become: yes
+  template:
+    src: firefox-sync.conf.j2
+    dest: "{{ dir_apache2_conf }}/conf-available/firefox-sync.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload apache web server
+  tags:
+    - configuration
+    - server
+    - syncserver
+
+- block:
+    - name: Enable apache Firefox sync config
+      file:
+        src: "../conf-available/firefox-sync.conf"
+        dest: "{{ dir_apache2_conf }}/conf-enabled/firefox-sync.conf"
+        state: link
+      notify: reload apache web server
+      tags:
+        - apache
+        - configuration
+        - nextcloud
+
+    - name: Verify apache configuration
+      command: apache2ctl configtest
+      changed_when: False
+      check_mode: no
+      tags:
+        - apache
+        - configuration
+        - nextcloud
+
+  rescue:
+    - name: Disable apache default vhost
+      file:
+        dest: "{{ dir_apache2_conf }}/conf-enabled/firefox-sync.conf"
+        state: absent
+      tags:
+        - apache
+        - configuration
+        - nextcloud
+
+    - name: Fail
+      fail:
+        msg: Apache config test failed
+      tags:
+        - apache
+        - configuration
+        - nextcloud
+
+- name: create sync mysql database
+  mysql_db:
+    name: "{{ firefox_sync_database }}"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_password }}"
+  tags:
+    - configuration
+    - database
+    - syncserver
+
+- name: create sync mysql user
+  mysql_user:
+    name: "{{ sync_database_user }}"
+    password: "{{ sync_database_password }}"
+    priv: "{{ firefox_sync_database }}.*:ALL"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_password }}"
+  tags:
+    - configuration
+    - database
+    - syncserver

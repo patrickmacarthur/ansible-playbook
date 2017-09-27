@@ -1,0 +1,68 @@
+---
+# file: roles/apache-base/tasks/main.yml
+
+- name: ensure apache web server is installed
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+  - "{{ pkg_apache2 }}"
+  - "{{ pkg_mod_php }}"
+  tags:
+  - packages
+  - apache
+
+- name: set PHP timezone
+  lineinfile:
+    dest: "/etc/php/7.0/apache2/conf.d/timezone.ini"
+    create: yes
+    regexp: '^date\.timezone'
+    line: "date.timezone = America/New_York"
+  tags:
+    - configuration
+    - php
+
+- name: Create virtual host directories
+  file:
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+    name: "{{ dir_apache2_conf }}/{{ item }}"
+  with_items:
+    - sites-available
+    - sites-enabled
+  tags:
+    - apache
+    - configuration
+
+- name: Include sites-enabled in apache config
+  copy:
+    mode: 0644
+    owner: root
+    group: root
+    src: zz_sites_enabled.conf
+    dest: /etc/httpd/conf.d/zz_sites_enabled.conf
+  notify: reload apache web server
+  when: "'redhat' in ansible_os_family|lower"
+  tags:
+    - apache
+    - configuration
+
+- name: ensure apache web server is started
+  service: name={{ svc_apache2 }} state=started enabled=yes
+  tags:
+    - services
+    - apache
+
+- name: ensure httpd ports are open in firewalld
+  firewalld:
+    state: enabled
+    permanent: yes
+    immediate: yes
+    zone: public
+    service: http
+  tags:
+    - configuration
+    - firewall
+    - apache

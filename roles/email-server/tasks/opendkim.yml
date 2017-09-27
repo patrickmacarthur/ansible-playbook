@@ -1,0 +1,88 @@
+---
+- name: Create opendkim configuration directory
+  file:
+    dest: /etc/opendkim
+    state: directory
+    owner: opendkim
+    group: opendkim
+    mode: 0755
+  tags:
+    - mail
+
+- name: Install opendkim trusted hosts
+  copy:
+    src: opendkim.TrustedHosts
+    dest: /etc/opendkim/TrustedHosts
+    mode: 0644
+    owner: root
+    group: root
+  notify: Reload opendkim
+  tags:
+    - configuration
+    - mail
+
+- name: Install opendkim configuration
+  template:
+    src: opendkim.conf.j2
+    dest: /etc/opendkim.conf
+    mode: 0644
+    owner: root
+    group: root
+  notify: Reload opendkim
+  tags:
+    - configuration
+    - mail
+
+- name: Create opendkim keypair
+  command: opendkim-genkey -s mail -d {{ mail_domain }}
+  args:
+    chdir: "{{ dir_opendkim_keys }}"
+    creates: "{{ dir_opendkim_keys }}/mail.private"
+  when: "'devel' in group_names"
+  notify: Reload opendkim
+  tags:
+    - configuration
+    - mail
+
+- name: Install opendkim public key
+  copy:
+    src: opendkim_mail.txt
+    dest: "{{ dir_opendkim_keys }}/mail.txt"
+    owner: opendkim
+    group: root
+    mode: 0600
+  when: "'devel' not in group_names"
+  notify: Reload opendkim
+  tags:
+    - configuration
+    - mail
+
+- name: Install opendkim private key
+  copy:
+    content: "{{ opendkim_mail_private_key }}"
+    dest: "{{ dir_opendkim_keys }}/mail.private"
+    owner: opendkim
+    group: root
+    mode: 0600
+  when: "'devel' not in group_names"
+  notify: Reload opendkim
+  tags:
+    - configuration
+    - mail
+
+- name: Set permissions of opendkim private key
+  file:
+    dest: "{{ dir_opendkim_keys }}/mail.private"
+    state: file
+    owner: opendkim
+    group: root
+    mode: 0600
+  tags:
+    - configuration
+    - mail
+
+- name: Autostart opendkim service
+  service: name=opendkim state=started enabled=yes
+  tags:
+    - services
+    - mail

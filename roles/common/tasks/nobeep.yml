@@ -1,0 +1,9 @@
+---
+# file: roles/common/tasks/nobeep.yml
+- name: Disable PC speaker kernel module
+  lineinfile:
+    dest: /etc/modprobe.d/nobeep.conf
+    create: yes
+    line: 'blacklist pcspkr'
+  tags:
+    - configuration

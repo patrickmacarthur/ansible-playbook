@@ -1,0 +1,106 @@
+---
+- name: Install spamd group
+  group:
+    name: "{{ user_spamd }}"
+    state: present
+    system: yes
+  tags:
+    - configuration
+    - mail
+    - spam
+
+- name: Install spamd user
+  user:
+    name: "{{ user_spamd }}"
+    state: present
+    system: yes
+    group: "{{ user_spamd }}"
+    shell: /bin/sh
+    home: /var/lib/spamassassin
+  tags:
+    - configuration
+    - mail
+    - spam
+
+- name: Put spamass-milter user in spamd group
+  user:
+    name: "{{ user_spamass_milter }}"
+    state: present
+    system: yes
+    append: yes
+    groups:
+      - "{{ user_spamd }}"
+  tags:
+    - configuration
+    - mail
+    - spam
+
+- name: Fix permissions on spamass-milter spamd configuration
+  become: yes
+  file:
+    name: /var/lib/spamass-milter/.spamassassin
+    state: directory
+    owner: "{{ user_spamass_milter }}"
+    group: "{{ user_spamd }}"
+    mode: 0770
+  tags:
+    - configuration
+    - mail
+    - spam
+
+- name: load textcat plugin
+  lineinfile:
+    dest: /etc/mail/spamassassin/init.pre
+    line: "loadplugin Mail::SpamAssassin::Plugin::TextCat"
+  tags:
+    - configuration
+    - mail
+    - spam
+
+- name: Install spamassassin configuration
+  copy:
+    src: mail/spamassassin/local.cf
+    dest: /etc/mail/spamassassin/local.cf
+    mode: 0644
+    owner: root
+    group: root
+  notify: Restart spamassassin
+  tags:
+    - configuration
+    - mail
+    - spam
+
+- name: Autostart spamassassin
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - spamassassin
+    - spamass-milter
+  tags:
+    - services
+    - spam
+    - mail
+
+- name: Install mailtrain cron script
+  copy:
+    src: mailtrain-cron.sh
+    dest: /usr/local/sbin/mailtrain-cron.sh
+    owner: root
+    group: root
+    mode: 0755
+  tags:
+    - dovecot
+    - mail
+
+- name: install mailtrain cron job into crontab
+  cron:
+    cron_file: spamassassin
+    name: Train spamassassin
+    minute: 5
+    hour: 1
+    user: root
+    job: /usr/local/sbin/mailtrain-cron.sh
+  tags:
+    - configuration
+    - cron
+    - mail
+    - spam

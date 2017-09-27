@@ -1,0 +1,39 @@
+<?php
+$CONFIG = array (
+  'log_type' => 'syslog',
+  'updatechecker' => false,
+  'check_for_working_htaccess' => false,
+  'asset-pipeline.enabled' => false,
+  'preview_libreoffice_path' => '/usr/bin/libreoffice',
+  'datadirectory' => '{{ nextcloud_data_dir }}',
+  'assetdirectory' => '{{ nextcloud_dir }}',
+  'instanceid' => 'ocbfbde7feda',
+  'passwordsalt' => '2a67839466df3835594872e671a3c5',
+  'version' => '7.0.4.2',
+  'dbtype' => 'mysql',
+  'dbname' => '{{ nextcloud_database }}',
+  'dbhost' => 'localhost',
+  'dbtableprefix' => 'oc_',
+  'dbuser' => '{{ nextcloud_database_user }}',
+  'dbpassword' => '{{ nextcloud_database_password }}',
+  'installed' => true,
+  'forcessl' => true,
+  'theme' => '',
+  'maintenance' => false,
+  'trusted_domains' => 
+  array (
+    0 => '{{ www_fqdn }}',
+    1 => '{{ inventory_hostname }}',
+  ),
+  'secret' => 'bea34099f3d490909af837bcfccc133ffe55fffa740f5bdcd705d4af43c0f4b8d56a42113208df2da6289a96a057ddb6',
+  'apps_paths' =>
+  array (
+    0 =>
+    array (
+      'path' => '{{ nextcloud_dir }}/apps',
+      'url' => '/apps',
+      'writable' => false,
+    ),
+  ),
+  'trashbin_retention_obligation' => 'auto',
+);

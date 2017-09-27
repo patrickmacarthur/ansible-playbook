@@ -1,0 +1,71 @@
+---
+# file: roles/apache-base/tasks/main.yml
+- name: enable ssl
+  apache2_module:
+    name: ssl
+    state: present
+  when: "'debian' in ansible_os_family|lower"
+  notify: reload apache web server
+  tags:
+    - configuration
+    - apache
+
+- name: Install default vhost into sites-available
+  template:
+    dest: "{{ dir_apache2_conf }}/sites-available/000-default.conf"
+    src: "{{ www_fqdn }}.conf.j2"
+    owner: root
+    group: root
+    mode: 0644
+    setype: httpd_config_t
+  notify: reload apache web server
+  tags:
+    - configuration
+    - apache
+
+- block:
+    - name: Enable apache default vhost
+      file:
+        src: "{{ dir_apache2_conf }}/sites-available/000-default.conf"
+        dest: "{{ dir_apache2_conf }}/sites-enabled/000-default.conf"
+        state: link
+      notify: reload apache web server
+      tags:
+        - configuration
+        - apache
+
+    - name: Verify apache configuration
+      command: apache2ctl configtest
+      changed_when: False
+      check_mode: no
+      tags:
+        - configuration
+        - apache
+
+  rescue:
+    - name: Disable apache default vhost
+      file:
+        dest: "{{ dir_apache2_conf }}/sites-enabled/000-default.conf"
+        state: absent
+      tags:
+        - configuration
+        - apache
+
+    - name: Fail since configuration validation did not work
+      fail:
+        msg: Apache config test failed
+      tags:
+        - apache
+        - configuration
+
+- name: ensure https port is open in firewalld
+  firewalld:
+    state: enabled
+    permanent: yes
+    immediate: yes
+    zone: public
+    service: https
+  tags:
+    - configuration
+    - firewall
+    - apache

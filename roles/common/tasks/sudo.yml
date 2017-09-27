@@ -1,0 +1,14 @@
+---
+# file: roles/common/tasks/sudo.yml
+# FIXME: only NOPASSWD for staging systems
+- name: Allow people in group wheel to run all commands via sudo
+  become: yes
+  lineinfile:
+    state: present
+    dest: /etc/sudoers
+    regexp: '^%(wheel|sudo)'
+    insertafter: '^#+ Allow.*group {{ grp_sudo }}'
+    line: '%{{ grp_sudo }} ALL=(ALL:ALL) NOPASSWD: ALL'
+    validate: visudo -cf %s
+  tags:
+    - configuration

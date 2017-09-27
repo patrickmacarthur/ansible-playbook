@@ -1,0 +1,23 @@
+---
+# file: roles/common/tasks/systemd.yml
+- name: Install systemd
+  package: name=systemd
+  tags:
+    - packages
+
+- name: Ensure adm system group exists
+  group: name=adm system=true
+  tags:
+    - configuration
+
+- name: Limit systemd journal to 50MB
+  ini_file:
+    dest: /etc/systemd/journald.conf
+    section: Journal
+    option: SystemMaxUse
+    value: 50M
+    backup: yes
+  notify:
+    - restart journald
+  tags:
+    - configuration

@@ -1,0 +1,5 @@
+localhost
+{% for host in groups['servers'] %}
+{{ lookup('dig', host ~ '/A') }}/32
+{{ lookup('dig', host ~ '/AAAA') }}/128
+{% endfor %}

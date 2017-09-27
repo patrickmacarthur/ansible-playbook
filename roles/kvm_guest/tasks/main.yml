@@ -1,0 +1,11 @@
+---
+# file: roles/kvm_guest/tasks/main.yml
+- name: Install guest agent
+  package: name=qemu-guest-agent state=present
+  tags:
+    - packages
+
+- name: Ensure guest agent is started
+  service: name={{ qemu_guest_agent_service }} state=started
+  tags:
+    - services

@@ -1,0 +1,9 @@
+<Directory /opt/mozilla-services/syncserver>
+  Order deny,allow
+  Allow from all
+</Directory>
+
+WSGIProcessGroup syncserver
+WSGIDaemonProcess syncserver user=syncserver group=syncserver processes=2 threads=25 python-path=/opt/mozilla-services/syncserver/local/lib/python2.7/site-packages/
+WSGIPassAuthorization On
+WSGIScriptAlias /firefox-sync /var/www/syncserver.wsgi

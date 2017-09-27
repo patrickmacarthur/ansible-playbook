@@ -1,0 +1,4 @@
+---
+# file: roles/common/handlers/grub.cfg
+- name: Regenerate grub configuration
+  command: grub2-mkconfig -o /boot/grub2/grub.cfg

@@ -1,0 +1,5 @@
+---
+# file: roles/common/tasks/hostname.yml
+- name: Set hostname with ansible module
+  hostname: name={{ inventory_hostname }}
+  tags: configuration

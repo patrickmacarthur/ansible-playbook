@@ -1,0 +1,36 @@
+---
+development_packages:
+ - "@development-tools"
+ - "@c-development"
+ - "kernel-devel-{{ ansible_kernel }}"
+dev: devel
+grp_sudo: wheel
+pkg_bind_utils: bind-utils
+pkg_gstreamer: gstreamer
+pkg_keepass2: keepass
+pkg_latex_base: texlive-collection-latex
+pkg_latex_recommended: texlive-collection-latexrecommended
+pkg_latex_extra: texlive-collection-latexextra
+pkg_lightning: thunderbird-lightning
+pkg_lightning_gdata: thunderbird-lightning-gdata
+pkg_network_manager_openvpn: NetworkManager-openvpn
+pkg_openssh_clients: openssh-clients
+pkg_rake: rubygem-rake
+pkg_ruby_rails: rubygem-rails
+pkg_rxvt_unicode: rxvt-unicode-256color
+pkg_saxon: saxon-scripts
+pkg_texlive_base: texlive-collection-basic
+pkg_texlive_fonts: texlive-collection-fontsrecommended
+pkg_texlive_fontutils: texlive-collection-fontutils
+pkg_texlive_generic: texlive-collection-genericrecommended
+pkg_texlive_publishers: texlive-collection-publishers
+pkg_texlive_science: texlive-collection-science
+pkg_vim: vim-enhanced
+pkg_wireshark: wireshark-qt
+pkg_xorg_font_utils: xorg-x11-font-utils
+pkg_xorg_input: xorg-x11-drv
+pkg_xorg_server_utils: xorg-x11-server-utils
+pkg_xorg_server: xorg-x11-server-Xorg
+pkg_xorg_video: xorg-x11-drv
+polkitd_user: polkitd
+svc_display_mgr: gdm

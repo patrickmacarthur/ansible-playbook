@@ -1,0 +1,3 @@
+{% for server in groups['servers'] %}
+/^(.*@){{ server }}$/ ${1}{{ mail_domain }}
+{% endfor %}

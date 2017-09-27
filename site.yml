@@ -1,0 +1,69 @@
+---
+# file: site.yml
+#
+# This is the master playbook. It includes all other playbooks.
+
+- name: Perform prerequisite items
+  hosts: localhost
+  become: yes
+
+  tasks:
+    - name: Install prerequisite OS packages (Ubuntu)
+      package:
+        name: libffi-dev,libssl-dev
+        state: present
+      tags:
+        - packages
+
+    - name: Install prerequisite Python modules
+      pip:
+        chdir: "{{ playbook_dir }}"
+        requirements: requirements.txt
+        state: present
+      tags:
+        - packages
+
+- name: Common system setup
+  hosts: all
+  user: "{{ user }}"
+  become: yes
+  become_method: sudo
+
+  pre_tasks:
+    - name: create OS group
+      group_by:
+        key: "os-{{ ansible_distribution }}-{{ (ansible_os_family == 'RedHat')|ternary(ansible_distribution_major_version, ansible_distribution_version) }}"
+      tags:
+        - always
+
+  roles:
+   - common
+   - console
+
+- name: Server setup
+  hosts: servers
+  user: "{{ user }}"
+  become: yes
+  become_method: sudo
+
+  roles:
+   - server
+   - apache-base
+   - letsencrypt-cert
+   - apache-vhost
+   - taskwarrior-server
+   - mysql
+   - nextcloud
+   - email-server
+   - firefox-sync-server
+
+- name: setup desktop system
+  hosts: desktops
+  user: "{{ user }}"
+  become: yes
+  become_method: sudo
+
+  roles:
+    - desktop
+    - devel
+    - latex

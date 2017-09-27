@@ -1,0 +1,4 @@
+---
+# file: roles/common/handlers/systemd.yml
+- name: restart journald
+  service: name=systemd-journald state=restarted

@@ -1,0 +1,99 @@
+auth_verbose = yes
+mail_location = mdbox:~/mdbox
+mbox_write_locks = fcntl
+
+managesieve_notify_capability = mailto
+managesieve_sieve_capability = fileinto reject envelope encoded-character vacation subaddress comparator-i;ascii-numeric relational regex imap4flags copy include variables body enotify environment mailbox date ihave
+
+protocols = imap sieve
+
+disable_plaintext_auth = yes
+
+auth_verbose = yes
+
+namespace inbox {
+  inbox = yes
+  location =
+  separator = /
+
+  mailbox Trash {
+    auto = create
+    special_use = \Trash
+  }
+
+  mailbox Drafts {
+    auto = subscribe
+    special_use = \Drafts
+  }
+
+  mailbox Sent {
+    auto = subscribe
+    special_use = \Sent
+  }
+
+  mailbox Junk {
+    auto = create
+    special_use = \Junk
+  }
+  prefix =
+}
+
+passdb {
+  driver = pam
+}
+userdb {
+  driver = passwd
+}
+
+service auth {
+  unix_listener /var/spool/postfix/private/auth {
+    group = postfix
+    mode = 0660
+    user = postfix
+  }
+}
+
+ssl = required
+ssl_cert = </etc/ssl/{{ www_fqdn }}.fullchain.pem
+ssl_key = </etc/ssl/private/{{ www_fqdn }}.key
+ssl_protocols = !SSLv2 !SSLv3
+ssl_cipher_list = ALL:!LOW:!SSLv2:!EXP:!aNULL
+
+quota_full_tempfail = yes
+lda_mailbox_autocreate = yes
+
+protocol lda {
+  mail_plugins = sieve
+}
+
+protocol imap {
+  # Support K9 mail's excessive connections
+  mail_max_userip_connections = 20
+
+  imap_client_workarounds = tb-extra-mailbox-sep
+}
+
+plugin {
+  sieve = ~/.dovecot.sieve
+  sieve_dir = ~/sieve
+  sieve_global_path = /etc/dovecot/default.sieve
+}
+
+### Dovecot Anti-Spam ###
+# Automatically sends spam to sa-learn to parse as --spam or --ham
+# if they are moved to or from the Spam mailbox respectively
+
+plugin {
+    antispam_backend = pipe
+    antispam_pipe_program = /etc/dovecot/dovecot-mailtrain.sh
+    antispam_pipe_program_spam_arg = spam
+    antispam_pipe_program_notspam_arg = ham
+    antispam_pipe_tmpdir = /tmp
+
+    antispam_debug_target = syslog
+    antispam_verbose_debug = 1
+
+    # Mailboxes to respond to
+    antispam_spam = Spam;Junk
+    antispam_trash = Deleted Messages;Trash
+}

@@ -1,0 +1,60 @@
+---
+- name: Install dovecot mailtrain script
+  copy:
+    src: dovecot-mailtrain.sh
+    dest: /etc/dovecot/dovecot-mailtrain.sh
+    owner: root
+    group: root
+    mode: 0755
+  tags:
+    - dovecot
+    - mail
+
+- name: Template dovecot configuration file
+  template:
+    src: dovecot.conf.j2
+    dest: /etc/dovecot/dovecot.conf
+    mode: 0644
+    owner: root
+    group: root
+    validate: doveconf -n -c %s
+  notify: Reload dovecot
+  tags:
+    - configuration
+    - mail
+    - dovecot
+
+- name: Install default sieve rules
+  copy:
+    src: default.sieve
+    dest: /etc/dovecot/default.sieve
+    mode: 0644
+    owner: root
+    group: root
+  notify: Compile default sieve rules
+  tags:
+    - configuration
+    - mail
+    - dovecot
+
+- name: Autostart dovecot service
+  service: name=dovecot state=started enabled=yes
+  tags:
+    - services
+    - mail
+    - dovecot
+
+- name: Crontab entries to delete old e-mail
+  cron:
+    name: clean {{ item }}
+    cron_file: dovecot
+    user: patrick
+    minute: 50
+    hour: 2
+    job: /usr/bin/doveadm expunge -u patrick mailbox {{ item }} before 30d
+  with_items:
+    - Junk
+    - Trash
+  tags:
+    - mail
+    - dovecot

@@ -1,0 +1,7 @@
+---
+# file: roles/common/handlers/main.yml
+- include: systemd.yml
+- include: grub.yml
+
+- name: Update XDG user directories
+  command: xdg-user-dirs-update

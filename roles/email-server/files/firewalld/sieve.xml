@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>ManageSieve</short>
+  <description>This option allows users to connect to the managesieve service to modify their IMAP sieve filters.</description>
+  <port protocol="tcp" port="4190"/>
+</service>

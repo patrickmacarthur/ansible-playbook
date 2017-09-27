@@ -1,0 +1,11 @@
+---
+# file: roles/console/tasks/dvorak.yml
+- name: Set keyboard layout in vconsole.conf
+  lineinfile:
+      dest: /etc/vconsole.conf
+      regexp: "^KEYMAP="
+      line: "KEYMAP=us-dvorak"
+      create: yes
+  notify: Run localectl
+  tags:
+    - configuration

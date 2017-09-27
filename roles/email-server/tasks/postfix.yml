@@ -1,0 +1,89 @@
+---
+- name: Install postfix policyd-spf.conf
+  copy:
+    src: policyd-spf.conf
+    dest: /etc/postfix-policyd-spf-python/policyd-spf.conf
+    mode: 0644
+    owner: root
+    group: root
+  notify: Reload postfix
+  tags:
+    - configuration
+    - postfix
+    - mail
+
+- name: Install postfix master.cf
+  copy:
+    src: postfix/master.cf
+    dest: /etc/postfix/master.cf
+    mode: 0644
+    owner: root
+    group: root
+  notify: Reload postfix
+  tags:
+    - configuration
+    - postfix
+    - mail
+
+- name: Install postfix bcc map
+  template:
+    src: postfix/bcc_map.j2
+    dest: /etc/postfix/bcc_map
+    mode: 0644
+    owner: root
+    group: root
+  notify:
+    - Regenerate bcc map
+    - Reload postfix
+  tags:
+    - configuration
+    - postfix
+    - mail
+
+- name: Install postfix canonical map
+  template:
+    src: postfix/canonical.j2
+    dest: /etc/postfix/canonical
+    mode: 0644
+    owner: root
+    group: root
+  notify:
+    - Regenerate canonical map
+    - Reload postfix
+  tags:
+    - configuration
+    - postfix
+    - mail
+
+- name: Template out postfix main configuration file
+  template:
+    src: postfix/main.cf.j2
+    dest: /etc/postfix/main.cf
+    mode: 0644
+    owner: root
+    group: root
+  notify: Reload postfix
+  tags:
+    - configuration
+    - postfix
+    - mail
+
+- name: Install email aliases file
+  copy:
+    src: aliases
+    dest: /etc/aliases
+    mode: 0644
+    owner: root
+    group: root
+  notify: Regenerate email aliases database
+  tags:
+    - configuration
+    - postfix
+    - mail
+
+- name: Autostart postfix service
+  service: name=postfix state=started enabled=yes
+  tags:
+    - services
+    - postfix
+    - mail

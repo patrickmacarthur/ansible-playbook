@@ -1,0 +1,9 @@
+---
+# file: roles/console/tasks/dvorak.yml
+- name: Run localectl
+  command: localectl set-keymap us-dvorak
+  notify: Regenerate initramfs
+- name: Regenerate initramfs
+  command: dracut --regenerate-all --force
+- name: Restart SSH
+  service: name=sshd state=restarted

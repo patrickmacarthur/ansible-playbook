@@ -1,0 +1,6 @@
+---
+nextcloud_database: nextcloud
+nextcloud_database_user: nextcloud
+nextcloud_dir: /var/www/nextcloud
+nextcloud_config_dir: "{{ nextcloud_dir }}/config"
+nextcloud_data_dir: "{{ nextcloud_dir }}/data"

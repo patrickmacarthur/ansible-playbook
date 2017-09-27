@@ -1,0 +1,101 @@
+---
+- name: Install taskd
+  package:
+    name: taskd
+    state: present
+  tags:
+    - packages
+    - taskserver
+
+- name: Initialize server directory
+  command: taskd init --data /var/lib/taskd
+  args:
+    creates: /var/lib/taskd/orgs
+  tags:
+    - taskserver
+
+- name: Create certificate directory
+  file:
+    dest: /var/lib/taskd/pki
+    state: directory
+    owner: Debian-taskd
+    group: Debian-taskd
+    mode: 0750
+  tags:
+    - taskserver
+
+- name: Install CA vars file
+  template:
+    src: vars.j2
+    dest: /var/lib/taskd/pki/vars
+    owner: Debian-taskd
+    group: Debian-taskd
+    mode: 0640
+  tags:
+    - taskserver
+
+- name: Generate client CA certificate
+  command: /usr/share/taskd/generate.ca
+  args:
+    chdir: /var/lib/taskd/pki
+    creates: /var/lib/taskd/pki/ca.cert.pem
+  tags:
+    - taskserver
+
+- name: Generate CRL certificate
+  command: /usr/share/taskd/generate.crl
+  args:
+    chdir: /var/lib/taskd/pki
+    creates: /var/lib/taskd/pki/server.crl.pem
+  tags:
+    - taskserver
+
+- name: Generate client API certificate
+  command: /usr/share/taskd/generate.client
+  args:
+    chdir: /var/lib/taskd/pki
+    creates: /var/lib/taskd/pki/client.cert.pem
+  tags:
+    - taskserver
+
+- name: Install taskd configuration
+  template:
+    src: config.j2
+    dest: /etc/taskd/config
+    owner: Debian-taskd
+    group: Debian-taskd
+    mode: 0644
+  notify: Restart taskd
+  tags:
+    - configuration
+    - taskserver
+
+- name: Fix PKI permissions
+  file:
+    dest: /var/lib/taskd/pki
+    state: directory
+    recurse: yes
+    owner: Debian-taskd
+    group: Debian-taskd
+  tags:
+    - taskserver
+
+- name: Start taskd service
+  service:
+    name: taskd
+    state: started
+    enabled: yes
+  tags:
+    - services
+    - taskserver
+
+- name: Open taskd port in firewall
+  firewalld:
+    zone: localisp
+    port: 53589/tcp
+    state: enabled
+    immediate: yes
+    permanent: yes
+  tags:
+    - firewall
+    - taskserver

@@ -1,0 +1,66 @@
+---
+# file: roles/mysql/tasks/main.yml
+
+- name: install mysql server
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ pkg_mysql_server }}"
+    - "{{ pkg_mysql_python }}"
+  tags:
+    - packages
+    - database
+
+- name: ensure mysql server is running
+  service:
+      name: "{{ svc_mysql }}"
+      state: started
+      enabled: yes
+  tags:
+    - services
+    - database
+
+- name: set mysql root account password
+  mysql_user:
+      name: root
+      host: "{{ item }}"
+      password: "{{ mysql_password }}"
+      state: present
+  with_items:
+    - "{{ ansible_hostname }}"
+    - 127.0.0.1
+    - localhost
+  ignore_errors: True
+  tags:
+    - configuration
+    - database
+
+#- name: fix mysql conf file
+#  template: src=root.my.cnf.j2 dest=/root/.my.cnf owner=root group=root mode=0600
+
+- name: remove mysql server anonymous users
+  mysql_user:
+      name:
+      host: "{{ item }}"
+      state: absent
+      login_user: root
+      login_password: "{{ mysql_password }}"
+  with_items:
+  - "{{ ansible_hostname }}"
+  - 127.0.0.1
+  - ::1
+  - localhost
+  tags:
+    - configuration
+    - database
+
+- name: remove mysql test database
+  mysql_db:
+      name: test
+      state: absent
+      login_user: root
+      login_password: "{{ mysql_password }}"
+  tags:
+    - configuration
+    - database

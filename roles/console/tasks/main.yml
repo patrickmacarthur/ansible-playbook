@@ -1,0 +1,19 @@
+---
+# file: roles/console/tasks/main.yml
+- include: dvorak.yml
+- include: ssh.yml
+- include: tmux.yml
+- include: git.yml
+- include: vim.yml
+- include: bash.yml
+- include: zsh.yml
+
+- name: Copy dircolors in place
+  copy:
+    src: dircolors.ansi-universal
+    dest: "{{ homedir }}/.dircolors"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0644
+  tags:
+    - homedir

@@ -1,0 +1,7 @@
+---
+# roles/devel/tasks/main.yml
+- name: Install C/C++ development packages
+  package: name={{ item }} state=present
+  with_items: "{{ development_packages }}"
+  tags:
+    - packages

@@ -1,0 +1,9 @@
+- name: Allow users in wheel to manage local VMs
+  copy:
+    src: 99-libvirt-manage.rules
+    dest: /etc/polkit-1/rules.d/99-libvirt-manage.rules
+    mode: 0644
+    owner: root
+    group: root
+  tags:
+    - configuration

@@ -1,0 +1,33 @@
+---
+- name: Turn off general firewall hole for SSH
+  firewalld:
+    immediate: no
+    permanent: yes
+    state: disabled
+    service: ssh
+    zone: public
+  notify: Reload firewalld
+  tags:
+    - server
+    - configuration
+    - firewall
+
+- name: allow SSH access from local ISPs
+  firewalld:
+    permanent: yes
+    state: enabled
+    service: ssh
+    zone: localisp
+  when: allow_ssh_access
+  notify: Reload firewalld
+  tags:
+    - server
+    - configuration
+    - firewall
+
+- name: Enable external SSH access
+  service: name=sshd state=started enabled=yes
+  when: allow_ssh_access
+  tags:
+    - server
+    - configuration

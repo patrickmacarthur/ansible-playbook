@@ -1,0 +1,8 @@
+[app:main]
+use = egg:syncserver
+
+[syncserver]
+public_url = https://{{ www_fqdn }}/firefox-sync
+sqluri = pymysql://{{ sync_database_user }}:{{ sync_database_password }}@localhost/{{ firefox_sync_database }}
+secret = {{ sync_secret_token }}
+allow_new_users = false

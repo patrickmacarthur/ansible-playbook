@@ -1,0 +1,22 @@
+---
+- name: Create polkit-1 rules directory
+  file:
+    state: directory
+    dest: /etc/polkit-1/rules.d
+    owner: "{{ polkitd_user }}"
+    group: root
+    mode: 0700
+  tags:
+    - desktop
+    - configuration
+
+- name: Allow users to mount internal filesystems
+  copy:
+    src: udisks2-allow-mount-internal.js
+    dest: /etc/polkit-1/rules.d/99-allow-mount-internal.rules
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - desktop
+    - configuration

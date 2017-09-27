@@ -1,0 +1,32 @@
+---
+# file: roles/common/tasks/user.yml
+- name: Create system groups
+  group:
+    name: "{{ item }}"
+    system: yes
+  with_items:
+    - "{{ grp_sudo }}"
+    - mail
+  tags:
+    - configuration
+
+- name: Create user-private group
+  group:
+    name: "{{ user }}"
+    system: no
+  tags:
+    - configuration
+
+- name: Create user account
+  user:
+    name: "{{ user }}"
+    comment: "{{ fullname }}"
+    home: "{{ homedir }}"
+    createhome: no
+    group: "{{ user }}"
+    groups: "{{ grp_sudo }},mail"
+    password: "{{ user_password }}"
+  tags:
+    - configuration
+
+- include: home.yml

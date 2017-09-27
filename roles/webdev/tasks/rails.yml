@@ -1,0 +1,12 @@
+---
+# roles/webdev/tasks/rails.yml
+- name: Install Ruby on Rails development packages
+  package: name={{ item }}
+  with_items:
+    - ruby
+    - "ruby-{{ dev }}"
+    - rubygems
+    - "{{ pkg_ruby_rails }}"
+    - "{{ pkg_rake }}"
+  tags:
+    - packages

@@ -1,0 +1,71 @@
+---
+- name: Set antivirus_use_jit SELinux boolean
+  seboolean:
+    name: antivirus_use_jit
+    persistent: yes
+    state: yes
+  when: "'redhat' in ansible_os_family|lower"
+  tags:
+    - antivirus
+    - configuration
+    - mail
+    - selinux
+
+- name: Install clamd configuration file
+  template:
+    src: clamd.conf.j2
+    dest: "{{ clamd_config }}"
+    mode: 0644
+    owner: root
+    group: root
+  notify: Reload clamd
+  tags:
+    - antivirus
+    - configuration
+    - mail
+
+- name: Install freshclam configuration file
+  copy:
+    src: freshclam.conf
+    dest: "{{ clamav_freshclam_config }}"
+    mode: 0644
+    owner: root
+    group: root
+  notify: Run freshclam
+  tags:
+    - antivirus
+    - configuration
+    - mail
+
+- name: Add postfix user to clamilt group
+  user:
+    name: postfix
+    append: yes
+    groups: "{{ clamav_milter_group }}"
+  tags:
+    - antivirus
+    - configuration
+    - mail
+
+- name: Install clamav-milter configuration file
+  template:
+    src: clamav-milter.conf.j2
+    dest: "{{ clamav_milter_config }}"
+    mode: 0644
+    owner: root
+    group: root
+  notify: Reload clamav-milter
+  tags:
+    - antivirus
+    - configuration
+    - mail
+
+- name: Autostart clamav services
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - "{{ clamd_service }}"
+    - clamav-milter
+  tags:
+    - antivirus
+    - services
+    - mail

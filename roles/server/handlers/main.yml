@@ -1,0 +1,17 @@
+---
+- name: Reload auditd
+  service: name=auditd state=reloaded
+- name: Reload firewalld
+  command: firewall-cmd --reload
+  notify: Reload fail2ban
+  tags:
+    - mail
+    - server
+    - firewall
+- name: Reload fail2ban
+  service: name=fail2ban state=reloaded
+  tags:
+    - server
+    - fail2ban
+    - firewall
+    - mail

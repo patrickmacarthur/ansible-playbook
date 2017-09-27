@@ -1,0 +1,9 @@
+---
+# file: roles/common/tasks/grub.cfg
+- name: Do not hardcode keyboard layout in grub command line
+  replace:
+      dest: "/etc/default/grub"
+      regexp: "vconsole\\.keymap=\\S+\\s"
+  notify: Regenerate grub configuration
+  tags:
+    - configuration

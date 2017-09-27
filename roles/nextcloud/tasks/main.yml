@@ -1,0 +1,147 @@
+---
+# file: roles/nextcloud/tasks/main.yml
+
+- name: ensure dependencies are installed
+  package: name={{ item }} state=present
+  with_items:
+    - php7.0-curl
+    - "{{ pkg_php_gd }}"
+    - php7.0-intl
+    - php-imagick
+    - php7.0-json
+    - php7.0-mbstring
+    - php7.0-mcrypt
+    - "{{ pkg_php_mysql }}"
+    - "{{ pkg_php_pdo }}"
+    - php7.0-xml
+    - php7.0-zip
+  notify: restart apache web server
+  tags:
+    - packages
+    - nextcloud
+
+- name: ensure apache web server can connect to MySQL
+  seboolean:
+    name: httpd_can_network_connect_db
+    state: yes
+    persistent: yes
+  when: "'redhat' in ansible_os_family|lower"
+  tags:
+    - configuration
+    - apache
+    - nextcloud
+    - database
+
+- name: create nextcloud mysql database
+  mysql_db:
+    name: "{{ nextcloud_database }}"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_password }}"
+  tags:
+    - configuration
+    - nextcloud
+    - database
+
+- name: create nextcloud mysql user
+  mysql_user:
+    name: "{{ nextcloud_database_user }}"
+    password: "{{ nextcloud_database_password }}"
+    priv: "{{ nextcloud_database }}.*:ALL"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_password }}"
+  tags:
+    - configuration
+    - nextcloud
+    - database
+
+- name: Test for nextcloud configuration file
+  stat: "path={{ nextcloud_config_dir }}/config.php"
+  register: nextcloud_config_file
+  tags:
+    - configuration
+    - nextcloud
+    - database
+
+- name: set up nextcloud configuration file
+  template:
+    src: config.php.j2
+    dest: "{{ nextcloud_config_dir }}/config.php"
+    owner: "{{ user_apache }}"
+    group: "{{ user_apache }}"
+    mode: 0660
+    setype: httpd_sys_rw_content_t
+  when: not nextcloud_config_file.stat.exists
+  tags:
+    - configuration
+    - nextcloud
+
+- name: enable apache modules
+  apache2_module:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - mpm_prefork
+    - dir
+    - env
+    - headers
+    - mime
+    - php7.0
+    - rewrite
+  when: "'debian' in ansible_os_family|lower"
+  notify: reload apache web server
+  tags:
+    - apache
+    - nextcloud
+
+- name: set up nextcloud apache configuration file
+  copy:
+    src: apache-nextcloud.conf
+    dest: "{{ dir_apache2_conf }}/conf-available/nextcloud.conf"
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - apache
+    - configuration
+    - nextcloud
+
+- block:
+    - name: Enable apache nextcloud config
+      file:
+        src: "{{ dir_apache2_conf }}/conf-available/nextcloud.conf"
+        dest: "{{ dir_apache2_conf }}/conf-enabled/nextcloud.conf"
+        state: link
+      notify: reload apache web server
+      tags:
+        - apache
+        - configuration
+        - nextcloud
+
+    - name: Verify apache configuration
+      command: apache2ctl configtest
+      changed_when: False
+      check_mode: no
+      tags:
+        - apache
+        - configuration
+        - nextcloud
+
+  rescue:
+    - name: Disable apache default vhost
+      file:
+        dest: "{{ dir_apache2_conf }}/conf-enabled/nextcloud.conf"
+        state: absent
+      tags:
+        - apache
+        - configuration
+        - nextcloud
+
+    - name: Fail
+      fail:
+        msg: Apache config test failed
+      tags:
+        - apache
+        - configuration
+        - nextcloud

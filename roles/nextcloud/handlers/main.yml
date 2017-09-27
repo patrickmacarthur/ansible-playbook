@@ -1,0 +1,9 @@
+---
+- name: Upgrade owncloud database schema
+  command: "sudo -u apache -- {{ php_scl_enable }} php {{ owncloud_dir }}/occ upgrade"
+  args:
+    chdir: "{{ owncloud_dir }}"
+  tags:
+    - configuration
+    - owncloud
+    - database

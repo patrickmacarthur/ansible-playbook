@@ -1,0 +1,98 @@
+---
+# file: roles/console/tasks/tmux.yml
+- name: Check for existence of tmux terminal type
+  command: /usr/bin/infocmp tmux-256color
+  changed_when: False
+  ignore_errors: True
+  register: term_tmux
+  tags:
+    - tmux
+    - configuration
+
+- block:
+    - name: Install extra ncurses terminal definitions
+      package:
+        name: ncurses-term
+        state: present
+      tags:
+        - packages
+        - tmux
+
+    - name: Create temp file
+      command: mktemp
+      register: terminfo_source
+      tags:
+        - configuration
+        - tmux
+
+    - name: Copy tmux terminal type source
+      copy:
+        src: tmux.terminfo
+        dest: "{{ terminfo_source|stdout }}"
+      tags:
+        - configuration
+        - tmux
+
+    - name: Install tmux terminal types
+      command: /usr/bin/tic "{{ terminfo_source|stdout }}"
+      tags:
+        - configuration
+        - tmux
+
+  always:
+    - name: Remove temp file
+      file:
+        name: "{{ terminfo_source|stdout }}"
+        state: absent
+      when: terminfo_source is defined
+      tags:
+        - configuration
+        - tmux
+
+  when: term_tmux|failed
+
+- name: Install tmux configuration directory
+  file:
+    dest: "{{ homedir }}/.config/tmux"
+    state: directory
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0644
+  tags:
+    - configuration
+    - homedir
+    - tmux
+
+- name: Install tmux color configurations
+  copy:
+    src: tmuxcolors-dark.conf
+    dest: "{{ homedir }}/.config/tmux/colors-dark.conf"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0644
+  tags:
+    - configuration
+    - homedir
+    - tmux
+
+- name: Symlink preferred tmux color configuration
+  file:
+    src: colors-dark.conf
+    dest: "{{ homedir }}/.config/tmux/colors.conf"
+    state: link
+  tags:
+    - configuration
+    - homedir
+    - tmux
+
+- name: Install tmux configuration file
+  copy:
+    dest: "{{ homedir }}/.tmux.conf"
+    src: "tmux.conf"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0644
+  tags:
+    - configuration
+    - homedir
+    - tmux

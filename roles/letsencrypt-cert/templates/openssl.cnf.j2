@@ -1,0 +1,29 @@
+[ req ]
+distinguished_name	= req_distinguished_name
+req_extensions = v3_req
+x509_extensions	= v3_req
+
+# This sets a mask for permitted string types. There are several options. 
+# default: PrintableString, T61String, BMPString.
+# pkix	 : PrintableString, BMPString (PKIX recommendation before 2004)
+# utf8only: only UTF8Strings (PKIX recommendation after 2004).
+# nombstr : PrintableString, T61String (no BMPStrings or UTF8Strings).
+# MASK:XXXX a literal mask value.
+# WARNING: ancient versions of Netscape crash on BMPStrings or UTF8Strings.
+string_mask = utf8only
+
+
+[ req_distinguished_name ]
+commonName			= Common Name (e.g. server FQDN or YOUR name)
+commonName_max			= 64
+
+[ v3_req ]
+
+# Extensions to add to a certificate request
+
+subjectKeyIdentifier = hash
+basicConstraints = critical,CA:FALSE
+keyUsage = critical, digitalSignature, keyEncipherment
+{% if www_aliases|length > 0 %}
+subjectAltName = DNS:{{ www_aliases|join(",DNS:") }}
+{% endif %}

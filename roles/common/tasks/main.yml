@@ -1,0 +1,18 @@
+---
+# file: roles/common/tasks/main.yml
+
+#
+# This is the common role for all systems.
+# If something is not applicable to every system, it shouldn't be here.
+#
+
+- include: packaging.yml
+- include: user.yml
+  when: ldap_server is not defined
+- include: systemd.yml
+- include: nobeep.yml
+- include: sudo.yml
+- include: hostname.yml
+- include: grub.yml
+- include: selinux.yml
+  when: ansible_os_family == "RedHat"

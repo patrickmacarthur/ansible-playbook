@@ -1,0 +1,52 @@
+---
+# file: roles/common/tasks/home.yml
+- name: Set up home directory structure
+  file:
+    state: directory
+    path: "{{ item.name }}"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    setype: "{{ item.context }}"
+    mode: "{{ item.mode }}"
+  with_items:
+      - { name: "{{ homedir }}", mode: '0710', context: user_home_dir_t }
+      - { name: "{{ homedir }}/bin", mode: '0755', context: home_bin_t }
+      - { name: "{{ homedir }}/doc", mode: '0755', context: home_bin_t }
+      - { name: "{{ homedir }}/downloads", mode: '0755', context: home_bin_t }
+      - { name: "{{ homedir }}/media", mode: '0755', context: user_home_t }
+      - { name: "{{ homedir }}/media/music", mode: '0755', context: user_home_t }
+      - { name: "{{ homedir }}/media/pictures", mode: '0755', context: user_home_t }
+      - { name: "{{ homedir }}/media/templates", mode: '0755', context: user_home_t }
+      - { name: "{{ homedir }}/media/videos", mode: '0755', context: user_home_t }
+      - { name: "{{ homedir }}/.config", mode: '0755', context: config_home_t }
+      - { name: "{{ homedir }}/.local", mode: '0700', context: gconf_home_t }
+      - { name: "{{ homedir }}/.local/share", mode: '0700', context: data_home_t }
+      - { name: "{{ homedir }}/.ssh", mode: '0700', context: ssh_home_t }
+  become: no
+  tags:
+    - homedir
+
+- name: Configure XDG data directory locations
+  copy:
+    dest: "{{ homedir }}/.config/user-dirs.dirs"
+    src: "user-dirs.dirs"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0600
+  become: no
+  notify: Update XDG user directories
+  tags:
+    - homedir
+
+- name: Authorize my public SSH key
+  authorized_key:
+    manage_dir: yes
+    user: "{{ user }}"
+    key: "{{ lookup('file', item) }}"
+  with_first_found:
+      - "{{ homedir }}/.ssh/id_rsa.pub"
+      - "{{ homedir }}/.ssh/id_dsa.pub"
+  ignore_errors: true
+  become: no
+  tags:
+    - homedir

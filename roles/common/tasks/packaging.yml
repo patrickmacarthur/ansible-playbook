@@ -1,0 +1,125 @@
+---
+# file: roles/common/tasks/packaging.yml
+# Assume EPEL release already installed
+- name: Pull in EPEL repository
+  package: name=epel-release
+  ignore_errors: true
+  register: epel_result
+  when: ansible_os_family == "RedHat" and ansible_distribution != "Fedora"
+  tags:
+    - packages
+
+# Bootstrap EPEL repository
+- name: Install EPEL bootstrap repo file
+  copy:
+      dest: /etc/yum.repos.d/epel-bootstrap.repo
+      src: epel-bootstrap.repo
+      owner: root
+      group: root
+      mode: 0644
+  when: epel_result|failed
+  tags:
+    - packages
+- name: Pull in EPEL repository (bootstrap)
+  package:
+      name: epel-release
+      enablerepo: epel-bootstrap
+      state: present
+  when: epel_result|failed
+  tags:
+    - packages
+- name: Remove EPEL bootstrap repo file
+  file:
+      name: /etc/yum.repos.d/epel-bootstrap.repo
+      state: absent
+  when: epel_result|failed
+  tags:
+    - packages
+
+- name: Install EPEL RPM signing public key
+  rpm_key: key={{ item }}
+  with_items:
+    - "/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}"
+  when: ansible_os_family == "RedHat" and ansible_distribution != "Fedora"
+  tags:
+    - packages
+    - configuration
+
+# Assume rpmfusion repositories already installed
+- name: Pull in rpmfusion free repository
+  package: name=rpmfusion-free-release
+  ignore_errors: true
+  register: rpmfusion_free_result
+  when: (media or games) and ansible_os_family == "RedHat"
+  tags:
+    - packages
+
+- name: Pull in rpmfusion nonfree repository
+  package: name=rpmfusion-nonfree-release
+  ignore_errors: true
+  register: rpmfusion_nonfree_result
+  when: (media or games) and ansible_os_family == "RedHat"
+  tags:
+    - packages
+
+# Bootstrap rpmfusion repositories
+- name: Download rpmfusion free repository
+  package: "name=http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_major_version }}.noarch.rpm"
+  when: rpmfusion_free_result|failed
+  tags:
+    - packages
+
+- name: Download rpmfusion nonfree repository
+  package: "name=http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_distribution_major_version }}.noarch.rpm"
+  when: rpmfusion_nonfree_result|failed
+  tags:
+    - packages
+
+- name: Install rpmfusion RPM signing public keys
+  rpm_key: key={{ item }}
+  with_items:
+    - /etc/pki/rpm-gpg/RPM-GPG-KEY-rpmfusion-free-fedora
+    - /etc/pki/rpm-gpg/RPM-GPG-KEY-rpmfusion-nonfree-fedora
+  when: (media or games) and ansible_os_family == "RedHat"
+  tags:
+    - packages
+    - configuration
+
+- name: Install packages
+  package: name={{ item }} state=present
+  with_items:
+    - bash
+    - bash-completion
+    - "{{ pkg_bind_utils }}"
+    - deltarpm
+    - dos2unix
+    - "{{ firewall_package }}"
+    - git
+    - git-email
+    - git-svn
+    - htop
+    - ntfs-3g
+    - "{{ pkg_openssh_clients }}"
+    - openssh-server
+    - python
+    - sudo
+    - tmux
+    - unzip
+    - "{{ pkg_vim }}"
+    - yum-utils
+    - zip
+    - zsh
+  tags:
+    - packages
+
+- name: Install SELinux-related packages
+  package:
+    name: libselinux-python,libsemanage-python
+    state: present
+  when: ansible_os_family == "RedHat"
+  tags:
+    - packages
+
+- name: Install Fedora-specific packages
+  package: name=python3 state=present
+  when: ansible_distribution == "Fedora"

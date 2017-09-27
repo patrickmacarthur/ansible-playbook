@@ -1,0 +1,58 @@
+---
+- name: Regenerate bcc map
+  command: postmap /etc/postfix/bcc_map
+
+- name: Regenerate canonical map
+  command: postmap /etc/postfix/canonical
+
+- name: Reload postfix
+  service: name=postfix state=reloaded
+  tags:
+    - mail
+    - pki
+
+- name: Reload opendkim
+  service: name=opendkim state=reloaded
+  tags:
+    - mail
+
+- name: Restart opendmarc
+  service: name=opendmarc state=restarted
+  tags:
+    - mail
+
+- name: Reload dovecot
+  service: name=dovecot state=reloaded
+  tags:
+    - mail
+    - pki
+
+- name: Restart spamassassin
+  service: name=spamassassin state=restarted
+  tags:
+    - mail
+
+- name: Reload clamd
+  service: "name={{ clamd_service }} state=restarted"
+  tags:
+    - mail
+
+- name: Reload clamav-milter
+  service: name=clamav-milter state=restarted
+  tags:
+    - mail
+
+- name: Regenerate email aliases database
+  command: /usr/bin/newaliases
+  tags:
+    - mail
+
+- name: Compile default sieve rules
+  command: /usr/bin/sievec /etc/dovecot/default.sieve
+  tags:
+    - mail
+
+- name: Run freshclam
+  command: /usr/bin/freshclam --datadir=/var/lib/clamav
+  tags:
+    - mail

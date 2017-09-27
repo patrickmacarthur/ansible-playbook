@@ -1,0 +1,6 @@
+---
+# file: roles/desktop/tasks/nouveau.yml
+- name: Install nouveau graphics driver
+  package: name={{ xserver-xorg-video }}-nouveau state=present
+  tags:
+    - packages
