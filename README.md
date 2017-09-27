@@ -13,16 +13,10 @@ To run the desktop roles, you will need to define the following
 variables:
 
  - `user`: Main username of your account.
-
  - `group`: Primary group of your user account; should be a user-private
    group for a personally-managed system.
-
  - `email`: Your primary e-mail address.
-
  - `graphics_vendor`: intel or nouveau for now.
-
- - 'laptop`: True if the host is a laptop.
-
+ - `laptop`: True if the host is a laptop.
  - `games`: True if you want to install games and packages like Steam.
-
  - `media`: True if you want to install music and video players.
