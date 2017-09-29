@@ -57,7 +57,7 @@
     state: directory
     owner: "{{ user }}"
     group: "{{ group }}"
-    mode: 0644
+    mode: 0755
   tags:
     - configuration
     - homedir
