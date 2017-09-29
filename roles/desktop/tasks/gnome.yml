@@ -16,3 +16,25 @@
   service: name={{ svc_display_mgr }} state=started
   tags:
     - services
+
+- name: "gtk-3.0 config directory"
+  file:
+    dest: "{{ homedir }}/.config/gtk-3.0"
+    state: directory
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0700
+  become: no
+  tags:
+    - homedir
+
+- name: "gtk-3.0 CSS override"
+  copy:
+    src: gtk.css
+    dest: "{{ homedir }}/.config/gtk-3.0"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0644
+  become: no
+  tags:
+    - homedir

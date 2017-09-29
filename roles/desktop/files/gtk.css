@@ -1,0 +1,8 @@
+/* Disable F10 keybinding to activate menu in GNOME terminal */
+@binding-set NoKeyboardNavigation {
+    unbind "<shift>F10"
+}
+
+* {
+    -gtk-key-bindings: NoKeyboardNavigation
+}
