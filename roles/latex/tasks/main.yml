@@ -3,6 +3,8 @@
 - name: Install texlive with needed LaTeX packages
   package: name={{ item }} state=present
   with_items:
+    - graphviz
+    - librsvg2-bin
     - "{{ pkg_texlive_base }}"
     - "{{ pkg_latex_base }}"
     - "{{ pkg_latex_recommended }}"
