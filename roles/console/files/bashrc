@@ -79,7 +79,6 @@ function recolor()
 
 # Set background color
 recolor
-export PS1
 
 # Change the window title of X terminals
 case ${TERM} in
