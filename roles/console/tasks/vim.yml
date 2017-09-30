@@ -48,8 +48,8 @@
   become: no
   remote_user: "{{ user }}"
   git:
-    repo: https://github.com/chase/vim-ansible-yaml.git
-    dest: "{{ homedir }}/.vim/bundle/vim-ansible-yaml"
+    repo: https://github.com/pearofducks/ansible-vim.git
+    dest: "{{ homedir }}/.vim/bundle/ansible-vim"
     version: master
   tags:
     - homedir
