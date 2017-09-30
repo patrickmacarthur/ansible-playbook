@@ -19,7 +19,19 @@ HISTSIZE=5000
 SAVEHIST=5000
 # End of lines configured by zsh-newuser-install
 
-export KEYTIMEOUT=1
+# Tolerate missing a specific terminal type if we have a more generic version
+# (e.g., substitute screen for screen-256color)
+screen_colors=$(tput colors 2>/dev/null)
+if [[ -z "${screen_colors}" && "$TERM" == tmux-* ]]; then
+	TERM=screen-${TERM##tmux-}
+	screen_colors=$(tput colors 2>/dev/null)
+fi
+while [[ "$TERM" == *-* && -z "$screen_colors" ]]; do
+	TERM=${TERM%-*}
+	screen_colors=$(tput colors 2>/dev/null)
+done
+
+KEYTIMEOUT=1
 bindkey -v
 bindkey '^R' vi-history-search-backward
 
@@ -186,13 +198,6 @@ fi
 
 alias head='head -n $(($LINES-5))'
 alias tail='tail -n $(($LINES-5))'
-
-export VISUAL=vim
-export EDITOR=$VISUAL
-export PAGER=less
-export LESS='FXRQ'
-
-setbrowser
 
 # cd without typing 'cd'
 setopt autocd

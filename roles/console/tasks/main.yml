@@ -5,8 +5,7 @@
 - include: tmux.yml
 - include: git.yml
 - include: vim.yml
-- include: bash.yml
-- include: zsh.yml
+- include: sh.yml
 
 - name: Copy dircolors in place
   copy:

@@ -1,10 +1,4 @@
 # .bashrc
-#
-# This file is sourced by all *interactive* bash shells on startup,
-# including some apparently interactive shells such as scp and rcp
-# that can't tolerate any output.  So make sure this doesn't display
-# anything or bad things will happen !
-
 
 # Test for an interactive shell.  There is no need to set anything
 # past this point for scp and rcp, and it's important to refrain from
@@ -14,6 +8,18 @@ if [[ $- != *i* ]] ; then
 	return
 fi
 
+# Tolerate missing a specific terminal type if we have a more generic version
+# (e.g., substitute screen for screen-256color)
+screen_colors=$(tput colors 2>/dev/null)
+if [[ -z "${screen_colors}" && "$TERM" == tmux-* ]]; then
+	TERM=screen-${TERM##tmux-}
+	screen_colors=$(tput colors 2>/dev/null)
+fi
+while [[ "$TERM" == *-* && -z "${screen_colors}" ]]; do
+	TERM=${TERM%-*}
+	screen_colors=$(tput colors 2>/dev/null)
+done
+unset screen_colors
 
 # Put your fun stuff here.
 # Source global definitions
@@ -106,21 +112,17 @@ fi
 # Make an open like Mac OS X has
 [[ -n "$(type -t xdg-open)" ]] && alias open=xdg-open
 
-export VISUAL=vim
-export EDITOR=$VISUAL
-export PAGER=less
-export LESS='FXRQ'
-
 HISTCONTROL=ignoreboth
 HISTSIZE=5000
 HISTFILESIZE=5000
 HISTIGNORE="&:?:??:[bf]g:history:exit:pwd:clear:[ ]*"
 shopt -s histappend
 
-[[ -f ~/.bashrc.local ]] && . ~/.bashrc.local
-
-# This is needed on Gentoo to enable bash completion, since the script is not
-# sourced for non-interactive login shells.
-if [ -f /etc/profile.d/bash-completion.sh ]; then
-  source /etc/profile.d/bash-completion.sh
+if ! shopt -oq posix; then
+	# enable programmable completion features if present
+	if [[ -f /usr/share/bash-completion/bash_completion ]]; then
+		. /usr/share/bash-completion/bash_completion
+	elif [[ -f /etc/bash_completion ]]; then
+		. /etc/bash_completion
+	fi
 fi
