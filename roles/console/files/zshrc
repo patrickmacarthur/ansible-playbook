@@ -123,11 +123,7 @@ setprompt() {
 	fi
 	for color in RED GREEN YELLOW BLUE MAGENTA CYAN WHITE; do
 		eval typeset PR_$color
-		if [[ "$TERMBG" == "light" || "$TERMBG" == "solarized" ]]; then
-			eval PR_$color='%{$fg[${(L)color}]%}'
-		elif [[ "$TERMBG" == "dark" ]]; then
-			eval PR_$color='%{$terminfo[bold]$fg[${(L)color}]%}'
-		fi
+                eval PR_$color='%{$fg[${(L)color}]%}'
 	done
 	PR_RESET="%{$terminfo[sgr0]%}"
 
@@ -145,49 +141,15 @@ setprompt() {
 }
 
 recolor() {
-	export TERMBG
-
-	if [[ "$1" == "dark" || "$1" == "light" || "$1" == "solarized" ]]; then
-		TERMBG="$1"
-	elif [[ -e "$HOME/.termbg.$TERM" ]]; then
-		source $HOME/.termbg.$TERM
-	elif [[ -e "$HOME/.termbg" ]]; then
-		source $HOME/.termbg
-	elif [[ -n "$COLORFGBG" ]]; then
-		bgcolor=$(cut -d\; -f3 <<<"$COLORFGBG")
-		if [[ -z "$bgcolor" ]]; then
-			bgcolor=$(cut -d\; -f2 <<<"$COLORFGBG")
-		fi
-		if [[ -n "$bgcolor" && "$bgcolor" != "default"
-				&& "$bgcolor" -ge 0
-				&& "$bgcolor" -le 8
-				&& "$bgcolor" -ne 7 ]]
-		then
-			TERMBG="dark"
-		else
-			TERMBG="light"
-		fi
-		unset bgcolor
-	elif [[ -n "$1" ]]; then
-		echo "Usage: recolor [light|dark]" >&2
-	fi
-
 	setprompt
 
-	if [[ $(tput colors) -ge 256 && -e $HOME/.dircolors.256color ]]; then
-		eval `dircolors --sh $HOME/.dircolors.256color`
-	elif [[ -e $HOME/.dircolors.$TERMBG ]]; then
-		eval `dircolors --sh $HOME/.dircolors.$TERMBG`
+	if [[ -e $HOME/.dircolors.$TERM ]]; then
+		eval `dircolors --sh $HOME/.dircolors.$TERM`
 	elif [[ -e $HOME/.dircolors ]]; then
 		eval `dircolors --sh $HOME/.dircolors`
 	fi
 }
 
-# Set background color
-if [[ -z "$TERMBG" && -f $HOME/.termbg.$TERM ]]; then
-	source $HOME/.termbg.$TERM
-	export TERMBG
-fi
 recolor
 export PS1
 

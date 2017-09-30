@@ -45,14 +45,6 @@ fi
 echo "Terminal type is $TERM."
 tset
 
-if [[ "$TERMBG" == "dark" || "$TERMBG" == "light" || "$TERMBG" == "solarized" ]]
-then
-	echo "Terminal background is $TERMBG."
-else
-	echo "Please set TERMBG=light or TERMBG=dark and run recolor."
-fi
-export TERMBG
-
 # Let us know if we've got running screen sessions
 if [[ -n $(type -t screen) ]]; then
 	screen -ls

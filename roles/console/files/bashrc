@@ -55,29 +55,6 @@ function recolor()
 	local normal red green yellow blue purple cyan white
 	local happy sad stat
 
-	if [[ "$1" == "dark" || "$1" == "light" || "$1" == "solarized" ]]; then
-		TERMBG="$1"
-	elif [[ -e "$HOME/.termbg.$TERM" ]]; then
-		source $HOME/.termbg.$TERM
-	elif [[ -e "$HOME/.termbg" ]]; then
-		source $HOME/.termbg
-	elif [[ -n "$COLORFGBG" ]]; then
-		bgcolor=$(cut -d\; -f3 <<<"$COLORFGBG")
-		if [[ -z "$bgcolor" ]]; then
-			bgcolor=$(cut -d\; -f2 <<<"$COLORFGBG")
-		fi
-		if [[ -n "$bgcolor" && "$bgcolor" != "default"
-				&& "$bgcolor" -ge 0
-				&& "$bgcolor" -le 8
-				&& "$bgcolor" -ne 7 ]]
-		then
-			TERMBG="dark"
-		else
-			TERMBG="light"
-		fi
-		unset bgcolor
-	fi
-
 	normal="\[$(tput sgr0)\]"
 	red="\[$(tput setaf 1)\]"
 	green="\[$(tput setaf 2)\]"
@@ -93,8 +70,8 @@ function recolor()
 	XTERM_TITLE='\[\e]0;\u@\H:$(dirs)$(__git_ps1 " (%s)")\a\]'
 	PS1="${green}\! \H $stat ${green}\$$normal ${XTERM_TITLE}"
 
-	if [[ -e $HOME/.dircolors.$TERMBG ]]; then
-		eval `dircolors --sh $HOME/.dircolors.$TERMBG`
+	if [[ -e $HOME/.dircolors.$TERM ]]; then
+		eval `dircolors --sh $HOME/.dircolors.$TERM`
 	elif [[ -e $HOME/.dircolors ]]; then
 		eval `dircolors --sh $HOME/.dircolors`
 	fi
@@ -102,7 +79,7 @@ function recolor()
 
 # Set background color
 recolor
-export PS1 TERMBG
+export PS1
 
 # Change the window title of X terminals
 case ${TERM} in

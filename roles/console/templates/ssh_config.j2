@@ -1,5 +1,5 @@
 Host *
-    SendEnv TERMBG COLORTERM COLORFGBG
+    SendEnv COLORTERM COLORFGBG
     VisualHostKey no
 
 Host {{ groups['servers']|map('regex_replace', '\\..*$', '')|sort|join(' ') }}
