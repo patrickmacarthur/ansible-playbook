@@ -229,7 +229,7 @@ alias tail='tail -n $(($LINES-5))'
 export VISUAL=vim
 export EDITOR=$VISUAL
 export PAGER=less
-export LESS=-XFQR
+export LESS='FXRQ'
 
 setbrowser
 

@@ -133,7 +133,7 @@ fi
 export VISUAL=vim
 export EDITOR=$VISUAL
 export PAGER=less
-export LESS=-FQR
+export LESS='FXRQ'
 
 HISTCONTROL=ignoreboth
 HISTSIZE=5000
