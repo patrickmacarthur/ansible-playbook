@@ -8,55 +8,54 @@ if [[ $- != *i* ]] ; then
 	return
 fi
 
-# Tolerate missing a specific terminal type if we have a more generic version
-# (e.g., substitute screen for screen-256color)
-screen_colors=$(tput colors 2>/dev/null)
-if [[ -z "${screen_colors}" && "$TERM" == tmux-* ]]; then
-	TERM=screen-${TERM##tmux-}
-	screen_colors=$(tput colors 2>/dev/null)
-fi
-while [[ "$TERM" == *-* && -z "${screen_colors}" ]]; do
-	TERM=${TERM%-*}
-	screen_colors=$(tput colors 2>/dev/null)
-done
-unset screen_colors
-
-# Put your fun stuff here.
 # Source global definitions
 if [ -f /etc/bashrc ]; then
 	. /etc/bashrc
 fi
 
-# User specific aliases and functions
-alias lt-gdb="libtool --mode=execute gdb"
-alias lt-valgrind="libtool --mode=execute valgrind"
+set -o ignoreeof -o vi
 
-if ! type __git_ps1 &>/dev/null; then
-	for git_prompt in \
-			/usr/share/doc/git-*/contrib/completion/git-completion.bash \
-			/usr/share/git{-core,}/contrib/completion/git-prompt.sh; do
+# Put your fun stuff here.
+alias whence_w="type -t"
+if [ -f ~/.shrc ]; then
+	. ~/.shrc
+fi
+
+# User specific aliases and functions
+git_prompt_locations=(
+	/usr/lib/git-core/git-sh-prompt
+	/usr/libexec/git-core/git-sh-prompt
+	/usr/share/git-core/contrib/completion/git-prompt.sh
+)
+if ! whence __git_ps1 &>/dev/null; then
+	for git_prompt in "${git_prompt_locations[@]}"; do
 		if [[ -f ${git_prompt} ]]; then
 			GIT_PS1_SHOWDIRTYSTATE=1
 			GIT_PS1_SHOWSTASHSTATE=1
 			GIT_PS1_SHOWUNTRACKEDFILES=1
 			GIT_PS1_SHOWUPSTREAM=auto
-			source ${git_prompt}
+			. ${git_prompt}
 		fi
 	done
 fi
-if ! type __git_ps1 &>/dev/null; then
-	alias __git_ps1=:
-fi
 
-# Run a command repeatedly until it fails
-function repeatedly ()
+prompt_cmd ()
 {
-	while "$@"; do :; done
-	return $?
+	local gitstat val
+	
+	gitstat=
+	type __git_ps1 >/dev/null 2>&1 && gitstat=$(__git_ps1)
+	val="${LOGNAME}@${HOSTNAME%%.*}:$(dirs)${gitstat}"
+
+	# Change the window title of X terminals
+	case ${TERM} in
+	screen*|tmux*|xterm*|rxvt*|Eterm|aterm|kterm|gnome*|konsole*|interix)
+		printf '\033]2;%s\007' "${val}"
+		;;
+	esac
 }
 
-# Prompt
-function recolor()
+set_prompt ()
 {
 	local normal red green yellow blue purple cyan white
 	local happy sad stat
@@ -73,44 +72,11 @@ function recolor()
 	happy="$green:-)$normal"
 	sad="$red:-($normal"
 	stat="\`[[ \$? = 0 ]] && echo \"$happy\" || echo \"$sad\"\`"
-	XTERM_TITLE='\[\e]0;\u@\H:$(dirs)$(__git_ps1 " (%s)")\a\]'
-	PS1="${green}\! \H $stat ${green}\$$normal ${XTERM_TITLE}"
+	PS1="${green}\! \H $stat ${green}\$$normal "
 
-	if [[ -e $HOME/.dircolors.$TERM ]]; then
-		eval `dircolors --sh $HOME/.dircolors.$TERM`
-	elif [[ -e $HOME/.dircolors ]]; then
-		eval `dircolors --sh $HOME/.dircolors`
-	fi
+	type prompt_cmd >/dev/null 2>&1 && PROMPT_COMMAND=prompt_cmd
 }
-
-# Set background color
-recolor
-
-# Change the window title of X terminals
-case ${TERM} in
-	xterm*|rxvt*|Eterm|aterm|kterm|gnome*|konsole*|interix)
-		PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}:$(dirs)\007"'
-		;;
-	screen*)
-		PROMPT_COMMAND='echo -ne "\033_${USER}@${HOSTNAME%%.*}:$(dirs)\033\\"'
-		;;
-esac
-
-# Colorization and other support for colorization in GNU tools.  If we don't
-# have GNU tools, use POSIX options that give us something close to what we
-# want.
-[[ -n "$(type -t colordiff)" ]] && alias diff=colordiff
-if [ $OSTYPE == "linux" -o $OSTYPE == "linux-gnu" ]; then
-	alias ls="ls --color=auto"
-	alias grep="grep --color=auto -n"
-elif [[ $(uname -s) == "FreeBSD" ]]; then
-	alias ls='ls -G'
-else
-	alias ls='ls -F'
-fi
-
-# Make an open like Mac OS X has
-[[ -n "$(type -t xdg-open)" ]] && alias open=xdg-open
+set_prompt
 
 HISTCONTROL=ignoreboth
 HISTSIZE=5000

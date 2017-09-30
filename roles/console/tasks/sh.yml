@@ -1,5 +1,5 @@
 ---
-# file: roles/console/tasks/zsh.yml
+# file: roles/console/tasks/sh.yml
 - name: Install Bourne Again Shell startup files
   copy:
     dest: "{{ homedir }}/.{{ item }}"
@@ -7,12 +7,13 @@
     owner: "{{ user }}"
     group: "{{ group }}"
     mode: 0644
+  become: no
   with_items:
     - bashrc
     - bash_profile
-    - bash_logout
     - inputrc
     - profile
+    - shrc
   tags:
     - homedir
 
@@ -23,6 +24,7 @@
     owner: "{{ user }}"
     group: "{{ group }}"
     mode: 0644
+  become: no
   tags:
     - homedir
 
@@ -33,6 +35,7 @@
     owner: "{{ user }}"
     group: "{{ group }}"
     mode: 0644
+  become: no
   with_items:
     - zshrc
     - zprofile
