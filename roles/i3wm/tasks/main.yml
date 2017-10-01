@@ -1,0 +1,39 @@
+---
+- name: "install i3wm and related packages"
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - dex
+    - i3
+    - paman
+    - paprefs
+    - pasystray
+    - pavucontrol
+    - pavumeter
+  tags:
+    - desktop
+    - packages
+
+- name: "install i3wm config directory"
+  file:
+    dest: "{{ homedir }}/.config/i3/config"
+    state: directory
+    mode: 0755
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  become: no
+  tags:
+    - desktop
+
+- name: "install i3wm config file"
+  copy:
+    src: config
+    dest: "{{ homedir }}/.config/i3/config"
+    mode: 0644
+    owner: "{{ user }}"
+    group: "{{ group }}"
+  become: no
+  tags:
+    - configuration
+    - desktop
