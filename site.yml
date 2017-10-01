@@ -5,13 +5,13 @@
 
 - name: Perform prerequisite items
   hosts: localhost
-  become: yes
 
   tasks:
     - name: Install prerequisite OS packages (Ubuntu)
       package:
         name: libffi-dev,libssl-dev
         state: present
+      become: yes
       tags:
         - packages
 
@@ -20,6 +20,7 @@
         chdir: "{{ playbook_dir }}"
         requirements: requirements.txt
         state: present
+      become: no
       tags:
         - packages
 
