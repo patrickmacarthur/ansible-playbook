@@ -1,15 +1,14 @@
 ---
 # file: roles/desktop/tasks/gnome.yml
 - name: Ensure GNOME environment is installed
-  yum: name=@gnome-desktop-environment state=present
-  when: ansible_os_family == "RedHat"
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ pkg_gnome }}"
+    - python-psutil
   tags:
-    - packages
-
-- name: Ensure GNOME environment is installed
-  package: name=gnome-core state=present
-  when: ansible_distribution == "Debian"
-  tags:
+    - dconf
     - packages
 
 - name: Enable gdm.service at startup
@@ -38,3 +37,13 @@
   become: no
   tags:
     - homedir
+
+- name: "Disable menubar for GNOME terminal"
+  dconf:
+    key: "/org/gnome/terminal/legacy/default-show-menubar"
+    value: "false"
+    state: present
+  become: no
+  tags:
+    - configuration
+    - dconf

@@ -6,6 +6,7 @@ development_packages:
 dev: devel
 grp_sudo: wheel
 pkg_bind_utils: bind-utils
+pkg_gnome: "@gnome-desktop-environment"
 pkg_gstreamer: gstreamer
 pkg_keepass2: keepass
 pkg_latex_base: texlive-collection-latex

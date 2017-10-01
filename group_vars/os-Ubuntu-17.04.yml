@@ -3,6 +3,7 @@ development_packages:
 dev: dev
 grp_sudo: sudo
 pkg_bind_utils: bind9utils
+pkg_gnome: gnome-core
 pkg_gstreamer: gstreamer1.0
 pkg_keepass2: keepass2
 pkg_latex_base: texlive-latex-base
