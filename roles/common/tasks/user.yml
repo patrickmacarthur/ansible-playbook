@@ -5,6 +5,7 @@
     name: "{{ item }}"
     system: yes
   with_items:
+    - docker
     - "{{ grp_sudo }}"
     - mail
   tags:
@@ -24,7 +25,7 @@
     home: "{{ homedir }}"
     createhome: no
     group: "{{ user }}"
-    groups: "{{ grp_sudo }},mail"
+    groups: "docker,{{ grp_sudo }},mail"
     password: "{{ user_password }}"
   tags:
     - configuration
