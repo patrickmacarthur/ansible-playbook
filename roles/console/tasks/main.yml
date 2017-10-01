@@ -1,11 +1,11 @@
 ---
 # file: roles/console/tasks/main.yml
-- include: dvorak.yml
-- include: ssh.yml
-- include: tmux.yml
-- include: git.yml
-- include: vim.yml
-- include: sh.yml
+- import_tasks: dvorak.yml
+- import_tasks: ssh.yml
+- import_tasks: tmux.yml
+- import_tasks: git.yml
+- import_tasks: vim.yml
+- import_tasks: sh.yml
 
 - name: Copy dircolors in place
   copy:

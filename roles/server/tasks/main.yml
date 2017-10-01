@@ -165,5 +165,5 @@
     - firewall
     - server
 
-- include: fail2ban.yml
-- include: ssh.yml
+- import_tasks: fail2ban.yml
+- import_tasks: ssh.yml

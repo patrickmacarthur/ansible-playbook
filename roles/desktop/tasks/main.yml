@@ -34,12 +34,12 @@
   tags:
     - packages
 
-- include: laptop.yml
+- include_tasks: laptop.yml
   when: laptop
-- include: graphics-intel.yml
+- include_tasks: graphics-intel.yml
   when: graphics_vendor == "intel"
-- include: graphics-nouveau.yml
+- include_tasks: graphics-nouveau.yml
   when: graphics_vendor == "nouveau"
-- include: gnome.yml
-- include: apps.yml
-- include: polkit.yml
+- import_tasks: gnome.yml
+- import_tasks: apps.yml
+- import_tasks: polkit.yml

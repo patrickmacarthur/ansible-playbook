@@ -6,13 +6,13 @@
 # If something is not applicable to every system, it shouldn't be here.
 #
 
-- include: packaging.yml
-- include: user.yml
+- import_tasks: packaging.yml
+- include_tasks: user.yml
   when: ldap_server is not defined
-- include: systemd.yml
-- include: nobeep.yml
-- include: sudo.yml
-- include: hostname.yml
-- include: grub.yml
-- include: selinux.yml
+- import_tasks: systemd.yml
+- import_tasks: nobeep.yml
+- import_tasks: sudo.yml
+- import_tasks: hostname.yml
+- import_tasks: grub.yml
+- include_tasks: selinux.yml
   when: ansible_os_family == "RedHat"

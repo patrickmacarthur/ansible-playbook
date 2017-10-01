@@ -19,10 +19,10 @@
     - packages
     - mail
 
-- include: opendkim.yml
-- include: dmarc.yml
-- include: spamassassin.yml
-- include: clamav.yml
-- include: dovecot.yml
-- include: postfix.yml
-- include: firewall.yml
+- import_tasks: opendkim.yml
+- import_tasks: dmarc.yml
+- import_tasks: spamassassin.yml
+- import_tasks: clamav.yml
+- import_tasks: dovecot.yml
+- import_tasks: postfix.yml
+- import_tasks: firewall.yml

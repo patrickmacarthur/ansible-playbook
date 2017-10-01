@@ -1,4 +1,4 @@
 ---
 # roles/webdev/tasks/main.yml
-- include: rails.yml
-- include: saxon.yml
+- import_tasks: rails.yml
+- import_tasks: saxon.yml
