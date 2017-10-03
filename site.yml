@@ -66,5 +66,6 @@
 
   roles:
     - desktop
+    - i3wm
     - devel
     - latex
