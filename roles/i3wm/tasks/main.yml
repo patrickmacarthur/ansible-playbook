@@ -15,9 +15,41 @@
     - desktop
     - packages
 
+- name: "create source directory"
+  file:
+    state: directory
+    dest: "{{ item }}"
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0755
+  with_items:
+    - "{{ homedir }}/src"
+    - "{{ homedir }}/src/graysky2"
+  become: no
+  tags:
+    - desktop
+
+- name: "clone pulseaudio-ctl repository"
+  git:
+    repo: https://github.com/graysky2/pulseaudio-ctl.git
+    dest: "{{ homedir }}/src/graysky2/pulseaudio-ctl"
+    version: master
+  become: no
+  tags:
+    - desktop
+
+- name: "make pulseaudio-ctl"
+  make:
+    chdir: "{{ homedir }}/src/graysky2/pulseaudio-ctl"
+    target: all
+  become: no
+  notify: "install pulseaudio-ctl"
+  tags:
+    - desktop
+
 - name: "install i3wm config directory"
   file:
-    dest: "{{ homedir }}/.config/i3/config"
+    dest: "{{ homedir }}/.config/i3"
     state: directory
     mode: 0755
     owner: "{{ user }}"

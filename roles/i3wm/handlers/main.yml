@@ -1,0 +1,7 @@
+---
+- name: "install pulseaudio-ctl"
+  make:
+    chdir: "{{ homedir }}/src/graysky2/pulseaudio-ctl"
+    target: install
+    params:
+      PREFIX: /usr/local
