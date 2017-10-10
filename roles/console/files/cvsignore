@@ -3,3 +3,5 @@
 *.sw?
 core*
 vgcore*
+__pycache__
+*.pyc
