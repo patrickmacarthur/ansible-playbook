@@ -52,5 +52,7 @@
     SSLCertificateKeyFile /etc/ssl/private/{{ www_fqdn }}.key
 
     Redirect permanent "/owncloud" "https://patrickmacarthur.net/nextcloud"
+    {% for r in www_redirects|default(dict()) %}Redirect "{{ r.src }}" "{{ r.dest }}"{% endfor %}
+
 </VirtualHost>
 </IfModule>
