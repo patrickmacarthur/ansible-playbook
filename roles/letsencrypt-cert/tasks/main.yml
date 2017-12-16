@@ -73,6 +73,7 @@
         dest: /etc/ssl/{{ www_fqdn }}.crt
         data: "{{ www_ssl_challenge }}"
         challenge: http-01
+        notify: Install fullchain PEM
       tags:
         - certificates
 
@@ -86,13 +87,6 @@
       tags:
         - certificates
 
-    - name: Install fullchain PEM
-      shell: cat /etc/ssl/{{ www_fqdn }}.crt /etc/ssl/{{ www_fqdn }}.chain.pem >/etc/ssl/{{ www_fqdn }}.fullchain.pem
-      args:
-        creates: /etc/ssl/{{ www_fqdn }}.fullchain.pem
-      tags:
-        - certificates
-
   always:
     - name: Remove challenge files
       file:
@@ -102,3 +96,6 @@
       when: www_ssl_challenge|changed
       tags:
         - certificates
+
+    - name: Force generation of fullchain PEM
+      meta: flush_handlers

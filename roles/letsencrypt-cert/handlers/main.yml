@@ -1,0 +1,5 @@
+---
+- name: Install fullchain PEM
+  shell: cat /etc/ssl/{{ www_fqdn }}.crt /etc/ssl/{{ www_fqdn }}.chain.pem >/etc/ssl/{{ www_fqdn }}.fullchain.pem
+  args:
+    creates: /etc/ssl/{{ www_fqdn }}.fullchain.pem
