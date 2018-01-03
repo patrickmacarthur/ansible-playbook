@@ -1,5 +1,16 @@
 ---
 # file: roles/console/tasks/sh.yml
+- name: Install bash completion directory
+  file:
+    dest: "{{ homedir }}/.local/share/bash-completion"
+    state: directory
+    owner: "{{ user }}"
+    group: "{{ group }}"
+    mode: 0755
+  become: no
+  tags:
+    - homedir
+
 - name: Install Bourne Again Shell startup files
   copy:
     dest: "{{ homedir }}/.{{ item }}"
@@ -10,6 +21,7 @@
   become: no
   with_items:
     - bashrc
+    - bash_completion
     - bash_profile
     - inputrc
     - profile
