@@ -73,7 +73,7 @@
         dest: /etc/ssl/{{ www_fqdn }}.crt
         data: "{{ www_ssl_challenge }}"
         challenge: http-01
-        notify: Install fullchain PEM
+      notify: Install fullchain PEM
       tags:
         - certificates
 
