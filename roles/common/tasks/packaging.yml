@@ -123,6 +123,8 @@
   tags:
     - packages
 
-- name: Install Fedora-specific packages
-  package: name=python3 state=present
-  when: ansible_distribution == "Fedora"
+- name: Install packages not available on RHEL
+  package:
+    name: python3
+    state: present
+  when: ansible_os_family != "RedHat" or ansible_distribution == "Fedora"
