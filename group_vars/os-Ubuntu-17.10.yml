@@ -23,6 +23,7 @@ pkg_texlive_fontutils: texlive-font-utils
 pkg_texlive_generic: texlive-generic-recommended
 pkg_texlive_publishers: texlive-publishers
 pkg_texlive_science: texlive-science
+pkg_tmuxp: tmuxp
 pkg_vim: vim-gnome
 pkg_wireshark: wireshark-qt
 pkg_xorg_font_utils: xfonts-utils

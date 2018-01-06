@@ -96,3 +96,49 @@
     - configuration
     - homedir
     - tmux
+
+- name: Setup tmuxp
+  block:
+    - name: Install tmuxp
+      package:
+        name: "{{ pkg_tmuxp }}"
+        state: present
+      tags:
+        - packages
+        - tmux
+
+    - name: Create tmuxp configuration directory
+      file:
+        dest: "{{ homedir }}/.config/tmuxp"
+        state: directory
+        owner: "{{ user }}"
+        group: "{{ group }}"
+        mode: 0755
+      tags:
+        - configuration
+        - homedir
+        - tmux
+
+    - name: Deploy tmuxp configuration
+      copy:
+        dest: "{{ homedir }}/.config/tmuxp/default.yaml"
+        src: "tmuxp-default.yaml"
+        owner: "{{ user }}"
+        group: "{{ group }}"
+        mode: 0644
+      tags:
+        - configuration
+        - homedir
+        - tmux
+
+    - name: Symlink config directory
+      file:
+        dest: "{{ homedir }}/.tmuxp"
+        src: ".config/tmuxp"
+        state: link
+      tags:
+        - configuration
+        - homedir
+        - tmux
+
+  when: pkg_tmuxp is defined
