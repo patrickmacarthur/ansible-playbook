@@ -106,16 +106,19 @@
     - tmux
     - unzip
     - "{{ pkg_vim }}"
-    - yum-utils
     - zip
     - zsh
   tags:
     - packages
 
-- name: Install SELinux-related packages
+- name: Install RedHat-specific packages
   package:
-    name: libselinux-python,libsemanage-python
+    name: "{{ item }}"
     state: present
+  with_items:
+    - libselinux-python
+    - libsemanage-python
+    - yum-utils
   when: ansible_os_family == "RedHat"
   tags:
     - packages
