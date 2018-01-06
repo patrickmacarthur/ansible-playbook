@@ -30,4 +30,4 @@
   tags:
     - configuration
 
-- include: home.yml
+- import_tasks: home.yml
