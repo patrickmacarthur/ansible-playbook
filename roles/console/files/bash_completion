@@ -1,4 +1,0 @@
-for bcfile in ${XDG_DATA_HOME:-${HOME}/.local/share}/bash-completion/* ; do
-	[[ -e $bcfile ]] || continue
-	. $bcfile
-done

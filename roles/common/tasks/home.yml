@@ -26,18 +26,6 @@
   tags:
     - homedir
 
-- name: Configure XDG data directory locations
-  copy:
-    dest: "{{ homedir }}/.config/user-dirs.dirs"
-    src: "user-dirs.dirs"
-    owner: "{{ user }}"
-    group: "{{ group }}"
-    mode: 0600
-  become: no
-  notify: Update XDG user directories
-  tags:
-    - homedir
-
 - name: Authorize my public SSH key
   authorized_key:
     manage_dir: yes
@@ -48,5 +36,34 @@
       - "{{ homedir }}/.ssh/id_dsa.pub"
   ignore_errors: true
   become: no
+  tags:
+    - homedir
+
+- name: Add github public SSH host key
+  known_hosts:
+    name: "github.com"
+    key: "github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ=="
+    state: present
+  become: no
+  tags:
+    - configuration
+
+- name: Set up dotfiles repository
+  command: vcsh clone {{ github_clone_prefix }}/patrickmacarthur/dotfiles.git dotfiles
+  args:
+    creates: "{{ homedir }}/.config/vcsh/repo.d/dotfiles.git"
+  become: no
+  notify:
+    - Update XDG user directories
+  tags:
+    - homedir
+
+- name: Checkout all enabled repositories
+  command: mr checkout
+  environment:
+    XDG_CONFIG_HOME: "$HOME/.config"
+  become: no
+  changed_when: "mr_checkout.stdout|search('mr checkout: finished \\(.*\\d+ ok')"
+  register: mr_checkout
   tags:
     - homedir

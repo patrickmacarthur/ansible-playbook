@@ -1,7 +1,0 @@
-#!/usr/bin/env zsh
-# Runs TLA+ syntax and semantic checker
-# Patrick MacArthur <contact@patrickmacarthur.net>
-
-TLAHOME=/opt/tla                 # where the Java bytecode is
-
-java -cp "$TLAHOME" -showversion tla2sany.SANY "$@"
