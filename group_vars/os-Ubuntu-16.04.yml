@@ -30,7 +30,7 @@ pkg_latex_extra: texlive-latex-extra
 pkg_latex_recommended: texlive-latex-recommended
 pkg_lightning: xul-ext-lightning
 pkg_lightning_gdata: xul-ext-gdata-provider
-pkg_log_monitor: logcheck
+pkg_log_monitor: logwatch
 pkg_mod_php: libapache2-mod-php7.0
 pkg_mod_wsgi: libapache2-mod-wsgi
 pkg_mysql_python: python-mysqldb
