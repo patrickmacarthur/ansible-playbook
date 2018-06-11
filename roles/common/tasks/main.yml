@@ -9,7 +9,6 @@
 - import_tasks: packaging.yml
 - import_tasks: user.yml
   when: ldap_server is not defined
-- import_tasks: systemd.yml
 - import_tasks: nobeep.yml
 - import_tasks: sudo.yml
 - import_tasks: hostname.yml

@@ -6,7 +6,6 @@
   with_items:
     - dex
     - i3
-    - paman
     - paprefs
     - pasystray
     - pavucontrol
