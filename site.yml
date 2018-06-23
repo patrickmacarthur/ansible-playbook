@@ -3,27 +3,6 @@
 #
 # This is the master playbook. It includes all other playbooks.
 
-- name: Perform prerequisite items
-  hosts: localhost
-
-  tasks:
-    - name: Install prerequisite OS packages (Ubuntu)
-      package:
-        name: libffi-dev,libssl-dev
-        state: present
-      become: yes
-      tags:
-        - packages
-
-    - name: Install prerequisite Python modules
-      pip:
-        chdir: "{{ playbook_dir }}"
-        requirements: requirements.txt
-        state: present
-      become: no
-      tags:
-        - packages
-
 - name: Common system setup
   hosts: all
   user: "{{ user }}"
