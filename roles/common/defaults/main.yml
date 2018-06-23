@@ -1,2 +1,5 @@
 ---
 firewall_package: firewalld
+user_system_groups:
+  - "{{ grp_sudo }}"
+  - mail

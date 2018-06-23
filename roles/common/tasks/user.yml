@@ -4,10 +4,7 @@
   group:
     name: "{{ item }}"
     system: yes
-  with_items:
-    - docker
-    - "{{ grp_sudo }}"
-    - mail
+  loop: "{{ user_system_groups }}"
   tags:
     - configuration
 
@@ -25,7 +22,7 @@
     home: "{{ homedir }}"
     createhome: no
     group: "{{ user }}"
-    groups: "docker,{{ grp_sudo }},mail"
+    groups: "{{ user_system_groups }}"
     password: "{{ user_password }}"
   tags:
     - configuration
