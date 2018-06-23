@@ -63,7 +63,7 @@
   environment:
     XDG_CONFIG_HOME: "$HOME/.config"
   become: no
-  changed_when: "mr_checkout.stdout|search('mr checkout: finished \\(.*\\d+ ok')"
+  changed_when: "mr_checkout.stdout is search('mr checkout: finished \\(.*\\d+ ok')"
   register: mr_checkout
   tags:
     - homedir

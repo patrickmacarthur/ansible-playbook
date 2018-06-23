@@ -59,7 +59,7 @@
         dest: /var/www/html/{{ item.value['http-01']['resource'] }}
         content: "{{ item.value['http-01']['resource_value'] }}"
       with_dict: "{{ www_ssl_challenge['challenge_data'] }}"
-      when: www_ssl_challenge|changed
+      when: www_ssl_challenge is changed
       tags:
         - certificates
 
@@ -93,7 +93,7 @@
         path: "{{ item.value['http-01']['resource'] }}"
         state: absent
       with_dict: "{{ www_ssl_challenge['challenge_data'] }}"
-      when: www_ssl_challenge|changed
+      when: www_ssl_challenge is changed
       tags:
         - certificates
 

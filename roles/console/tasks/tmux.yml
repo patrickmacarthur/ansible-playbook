@@ -49,7 +49,7 @@
         - configuration
         - tmux
 
-  when: term_tmux|failed
+  when: term_tmux is failed
 
 - name: Install tmuxp
   package:

@@ -17,7 +17,7 @@
       owner: root
       group: root
       mode: 0644
-  when: epel_result|failed
+  when: epel_result is failed
   tags:
     - packages
 - name: Pull in EPEL repository (bootstrap)
@@ -25,14 +25,14 @@
       name: epel-release
       enablerepo: epel-bootstrap
       state: present
-  when: epel_result|failed
+  when: epel_result is failed
   tags:
     - packages
 - name: Remove EPEL bootstrap repo file
   file:
       name: /etc/yum.repos.d/epel-bootstrap.repo
       state: absent
-  when: epel_result|failed
+  when: epel_result is failed
   tags:
     - packages
 
@@ -65,13 +65,13 @@
 # Bootstrap rpmfusion repositories
 - name: Download rpmfusion free repository
   package: "name=http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_major_version }}.noarch.rpm"
-  when: rpmfusion_free_result|failed
+  when: rpmfusion_free_result is failed
   tags:
     - packages
 
 - name: Download rpmfusion nonfree repository
   package: "name=http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ ansible_distribution_major_version }}.noarch.rpm"
-  when: rpmfusion_nonfree_result|failed
+  when: rpmfusion_nonfree_result is failed
   tags:
     - packages
 
