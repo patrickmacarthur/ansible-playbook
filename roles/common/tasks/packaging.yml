@@ -103,6 +103,7 @@
     - "{{ pkg_openssh_clients }}"
     - openssh-server
     - python
+    - rkhunter
     - sudo
     - tmux
     - unzip
