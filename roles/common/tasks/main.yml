@@ -15,3 +15,12 @@
 - import_tasks: grub.yml
 - include_tasks: selinux.yml
   when: ansible_os_family == "RedHat"
+
+- name: Enable pam_passwdqc (Debian/Ubuntu)
+  lineinfile:
+    path: /etc/pam.d/common-password
+    state: present
+    line: "password\trequisite\t\t\tpam_passwdqc.so config=/etc/passwdqc.conf"
+  when: ansible_os_family == "Debian"
+  tags:
+    - passwdqc

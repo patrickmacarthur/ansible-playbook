@@ -98,6 +98,7 @@
     - git-email
     - git-svn
     - htop
+    - libpam-passwdqc
     - myrepos
     - ntfs-3g
     - "{{ pkg_openssh_clients }}"
@@ -111,6 +112,7 @@
     - zip
     - zsh
   tags:
+    - passwdqc
     - packages
 
 - name: Install RedHat-specific packages
@@ -133,3 +135,12 @@
     - python3
     - vcsh
   when: ansible_os_family != "RedHat" or ansible_distribution == "Fedora"
+
+- name: Remove unneeded packages
+  package:
+    name: libpam-cracklib
+    state: absent
+  when: ansible_os_family == "Debian"
+  tags:
+    - packages
+    - passwdqc
