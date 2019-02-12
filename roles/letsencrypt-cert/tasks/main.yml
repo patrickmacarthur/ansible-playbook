@@ -39,6 +39,7 @@
     csr: /etc/ssl/{{ www_fqdn }}.csr
     dest: /etc/ssl/{{ www_fqdn }}.crt
     challenge: http-01
+    remaining_days: 20
   register: www_ssl_challenge
   tags:
     - certificates
@@ -72,6 +73,7 @@
         csr: /etc/ssl/{{ www_fqdn }}.csr
         dest: /etc/ssl/{{ www_fqdn }}.crt
         data: "{{ www_ssl_challenge }}"
+        remaining_days: 20
         challenge: http-01
       notify: Install fullchain PEM
       tags:
