@@ -715,3 +715,5 @@ smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
 policy-spf_time_limit = 3600s
 
 smtpd_recipient_restrictions = permit_mynetworks,permit_sasl_authenticated,reject_unauth_destination,check_policy_service unix:private/policy-spf
+
+message_size_limit = 20480000
