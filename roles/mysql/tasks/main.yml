@@ -3,11 +3,10 @@
 
 - name: install mysql server
   package:
-    name: "{{ item }}"
     state: present
-  with_items:
-    - "{{ pkg_mysql_server }}"
-    - "{{ pkg_mysql_python }}"
+    name:
+      - "{{ pkg_mysql_server }}"
+      - "{{ pkg_mysql_python }}"
   tags:
     - packages
     - database

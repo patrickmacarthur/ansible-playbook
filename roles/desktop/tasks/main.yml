@@ -1,36 +1,37 @@
 ---
 # file: roles/desktop/tasks/main.yml
 - name: Install desktop packages
-  package: name={{ item }} state=present
-  with_items:
-    - baobab
-    - brasero
-    - cheese
-    - deja-dup
-    - dia
-    - firefox
-    - gitg
-    - gnucash
-    - inkscape
-    - "{{ pkg_keepass2 }}"
-    - ktouch
-    - libreoffice-calc
-    - libreoffice-impress
-    - libreoffice-writer
-    - liferea
-    - nautilus
-    - "{{ pkg_network_manager_openvpn }}"
-    - "{{ pkg_okteta }}"
-    - "{{ pkg_rxvt_unicode }}"
-    - xdotool
-    - seahorse
-    - thunderbird
-    - "{{ pkg_lightning_gdata }}"
-    - vinagre
-    - "{{ pkg_wireshark }}"
-    - "{{ pkg_xorg_font_utils }}"
-    - "{{ pkg_xorg_server_utils }}"
-    - "{{ pkg_xorg_server }}"
+  package:
+    state: present
+    name:
+      - baobab
+      - brasero
+      - cheese
+      - deja-dup
+      - dia
+      - firefox
+      - gitg
+      - gnucash
+      - inkscape
+      - "{{ pkg_keepass2 }}"
+      - ktouch
+      - libreoffice-calc
+      - libreoffice-impress
+      - libreoffice-writer
+      - liferea
+      - nautilus
+      - "{{ pkg_network_manager_openvpn }}"
+      - "{{ pkg_okteta }}"
+      - "{{ pkg_rxvt_unicode }}"
+      - xdotool
+      - seahorse
+      - thunderbird
+      - "{{ pkg_lightning_gdata }}"
+      - vinagre
+      - "{{ pkg_wireshark }}"
+      - "{{ pkg_xorg_font_utils }}"
+      - "{{ pkg_xorg_server_utils }}"
+      - "{{ pkg_xorg_server }}"
   tags:
     - packages
 

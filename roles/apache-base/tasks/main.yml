@@ -3,11 +3,10 @@
 
 - name: ensure apache web server is installed
   package:
-    name: "{{ item }}"
+    name:
+      - "{{ pkg_apache2 }}"
+      - "{{ pkg_mod_php }}"
     state: present
-  with_items:
-  - "{{ pkg_apache2 }}"
-  - "{{ pkg_mod_php }}"
   tags:
   - packages
   - apache

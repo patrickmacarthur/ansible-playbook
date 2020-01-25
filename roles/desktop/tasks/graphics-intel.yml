@@ -1,6 +1,8 @@
 ---
 # file: roles/desktop/tasks/graphics-intel.yml
 - name: Install Intel graphics driver
-  package: name={{ pkg_xorg_video }}-intel state=present
+  package:
+    name: "{{ pkg_xorg_video }}-intel"
+    state: present
   tags:
     - packages

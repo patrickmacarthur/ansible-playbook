@@ -2,11 +2,10 @@
 # file: roles/desktop/tasks/gnome.yml
 - name: Ensure GNOME environment is installed
   package:
-    name: "{{ item }}"
     state: present
-  with_items:
-    - "{{ pkg_gnome }}"
-    - python-psutil
+    name:
+      - "{{ pkg_gnome }}"
+      - python-psutil
   tags:
     - dconf
     - packages

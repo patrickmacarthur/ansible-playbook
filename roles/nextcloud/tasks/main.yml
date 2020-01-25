@@ -2,19 +2,20 @@
 # file: roles/nextcloud/tasks/main.yml
 
 - name: ensure dependencies are installed
-  package: name={{ item }} state=present
-  with_items:
-    - php7.0-curl
-    - "{{ pkg_php_gd }}"
-    - php7.0-intl
-    - php-imagick
-    - php7.0-json
-    - php7.0-mbstring
-    - php7.0-mcrypt
-    - "{{ pkg_php_mysql }}"
-    - "{{ pkg_php_pdo }}"
-    - php7.0-xml
-    - php7.0-zip
+  package:
+    state: present
+    name:
+      - php7.0-curl
+      - "{{ pkg_php_gd }}"
+      - php7.0-intl
+      - php-imagick
+      - php7.0-json
+      - php7.0-mbstring
+      - php7.0-mcrypt
+      - "{{ pkg_php_mysql }}"
+      - "{{ pkg_php_pdo }}"
+      - php7.0-xml
+      - php7.0-zip
   notify: restart apache web server
   tags:
     - packages

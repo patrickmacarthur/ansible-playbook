@@ -1,19 +1,20 @@
 ---
 # roles/latex/tasks/main.yml
 - name: Install texlive with needed LaTeX packages
-  package: name={{ item }} state=present
-  with_items:
-    - graphviz
-    - librsvg2-bin
-    - "{{ pkg_texlive_base }}"
-    - "{{ pkg_latex_base }}"
-    - "{{ pkg_latex_recommended }}"
-    - "{{ pkg_latex_extra }}"
-    - "{{ pkg_texlive_fonts }}"
-    - "{{ pkg_texlive_fontutils }}"
-    - "{{ pkg_texlive_generic }}"
-    - "{{ pkg_texlive_publishers }}"
-    - "{{ pkg_texlive_science }}"
-    - latexmk
+  package:
+    state: present
+    name:
+      - graphviz
+      - librsvg2-bin
+      - "{{ pkg_texlive_base }}"
+      - "{{ pkg_latex_base }}"
+      - "{{ pkg_latex_recommended }}"
+      - "{{ pkg_latex_extra }}"
+      - "{{ pkg_texlive_fonts }}"
+      - "{{ pkg_texlive_fontutils }}"
+      - "{{ pkg_texlive_generic }}"
+      - "{{ pkg_texlive_publishers }}"
+      - "{{ pkg_texlive_science }}"
+      - latexmk
   tags:
     - packages

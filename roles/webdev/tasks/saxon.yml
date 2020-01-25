@@ -1,6 +1,8 @@
 ---
 # file: roles/webdev/tasks/saxon.yml
 - name: Install SAXON XSLT parser
-  package: name={{ pkg_saxon }}
+  package:
+    name: "{{ pkg_saxon }}"
+    state: present
   tags:
     - packages

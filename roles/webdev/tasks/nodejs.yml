@@ -1,10 +1,10 @@
 ---
 # file: roles/webdev/tasks/nodejs.yml
 - name: Install node.js JavaScript Web server framework
-  package: name={{ item }}
-  with_items:
-    - nodejs
-    - nodejs-express
-    - npm
+  package:
+    name:
+      - nodejs
+      - nodejs-express
+      - npm
   tags:
     - packages

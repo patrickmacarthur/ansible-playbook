@@ -35,7 +35,7 @@
    - mysql
    - nextcloud
    - email-server
-   - firefox-sync-server
+   #- firefox-sync-server
 
 - name: setup desktop system
   hosts: desktops

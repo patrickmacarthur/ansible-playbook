@@ -54,5 +54,6 @@
 
 - name: Run freshclam
   command: /usr/bin/freshclam --datadir=/var/lib/clamav
+  ignore_errors: yes
   tags:
     - mail

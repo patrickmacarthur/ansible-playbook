@@ -2,13 +2,14 @@
 # tasks file for roles/firefox-sync-server
 - name: Install prerequisite packages
   become: yes
-  package: name={{ item }} state=present
-  with_items:
-    - "{{ development_packages }}"
-    - "{{ pkg_mod_wsgi }}"
-    - python
-    - python-{{ dev }}
-    - "{{ pkg_virtualenv }}"
+  package:
+    state: present
+    name:
+      - "{{ development_packages }}"
+      - "{{ pkg_mod_wsgi }}"
+      - python
+      - python-{{ dev }}
+      - "{{ pkg_virtualenv }}"
   notify: restart apache web server
   tags:
     - packages

@@ -1,9 +1,10 @@
 ---
 # file: roles/desktop/tasks/laptop.yml
 - name: Install laptop-related packages
-  package: name={{ item }} state=present
-  with_items:
-    - powertop
-    - "{{ pkg_xorg_input }}-synaptics"
+  package:
+    state: present
+    name:
+      - powertop
+      - "{{ pkg_xorg_input }}-synaptics"
   tags:
     - packages

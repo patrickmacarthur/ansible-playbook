@@ -1,13 +1,14 @@
 ---
 # file: roles/desktop/tasks/apps.yml
 - name: Install media applications
-  package: name={{ item }} state=present
-  with_items:
-    - "{{ pkg_gstreamer }}-plugins-bad"
-    - "{{ pkg_gstreamer }}-plugins-good"
-    - "{{ pkg_gstreamer }}-plugins-ugly"
-    - rhythmbox
-    - totem
+  package:
+    state: present
+    name:
+      - "{{ pkg_gstreamer }}-plugins-bad"
+      - "{{ pkg_gstreamer }}-plugins-good"
+      - "{{ pkg_gstreamer }}-plugins-ugly"
+      - rhythmbox
+      - totem
   when: media
   tags:
     - packages
