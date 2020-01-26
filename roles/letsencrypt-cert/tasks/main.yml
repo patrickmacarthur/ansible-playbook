@@ -6,6 +6,20 @@
   tags:
     - certificates
 
+- name: Create LetsEncypt account
+  acme_account:
+    account_key_src: /etc/ssl/private/account.key
+    contact:
+      - "mailto:{{ user }}@{{ mail_domain }}"
+    acme_directory: "https://acme-v02.api.letsencrypt.org/directory"
+    acme_version: 2
+    allow_creation: no
+    state: present
+    terms_agreed: yes
+  register: letsencrypt_account
+  tags:
+      -certificates
+
 - name: Install openssl configuration for CSR generation
   template:
     src: openssl.cnf.j2
@@ -31,15 +45,18 @@
     - certificates
 
 - name: Request LetsEncrypt challenge
-  letsencrypt:
-    account_key: /etc/ssl/private/account.key
-    account_email: "{{ user }}@{{ mail_domain }}"
-    acme_directory: "https://acme-v01.api.letsencrypt.org/directory"
-    agreement: "https://letsencrypt.org/documents/LE-SA-v1.1.1-August-1-2016.pdf"
+  acme_certificate:
+    account_key_src: /etc/ssl/private/account.key
+    account_uri: "{{ letsencrypt_account.account_uri }}"
+    acme_directory: "https://acme-v02.api.letsencrypt.org/directory"
+    acme_version: 2
     csr: /etc/ssl/{{ www_fqdn }}.csr
     dest: /etc/ssl/{{ www_fqdn }}.crt
+    chain_dest: /etc/ssl/{{ www_fqdn }}.chain.pem
+    fullchain_dest: /etc/ssl/{{ www_fqdn }}.fullchain.pem
     challenge: http-01
     remaining_days: 20
+    terms_agreed: yes
   register: www_ssl_challenge
   tags:
     - certificates
@@ -65,16 +82,19 @@
         - certificates
 
     - name: Request LetsEncrypt certificate
-      letsencrypt:
+      acme_certificate:
         account_key: /etc/ssl/private/account.key
         account_email: "{{ user }}@{{ mail_domain }}"
-        acme_directory: "https://acme-v01.api.letsencrypt.org/directory"
-        agreement: "https://letsencrypt.org/documents/LESA-v1.1.1-August-1-2016.pdf"
+        acme_directory: "https://acme-v02.api.letsencrypt.org/directory"
         csr: /etc/ssl/{{ www_fqdn }}.csr
         dest: /etc/ssl/{{ www_fqdn }}.crt
+        chain_dest: /etc/ssl/{{ www_fqdn }}.chain.pem
+        fullchain_dest: /etc/ssl/{{ www_fqdn }}.fullchain.pem
         data: "{{ www_ssl_challenge }}"
         remaining_days: 20
         challenge: http-01
+        acme_version: 2
+        terms_agreed: yes
       notify: Install fullchain PEM
       tags:
         - certificates
