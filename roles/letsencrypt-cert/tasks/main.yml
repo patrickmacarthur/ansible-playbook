@@ -101,7 +101,7 @@
 
     - name: Install intermediate chain
       copy:
-        src: lets-encrypt-x3-cross-signed.pem
+        src: lets-encrypt-r3.pem
         dest: /etc/ssl/{{ www_fqdn }}.chain.pem
         owner: root
         group: root
