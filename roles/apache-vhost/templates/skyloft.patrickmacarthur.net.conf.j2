@@ -51,7 +51,7 @@
     #SSLCertificateChainFile /etc/ssl/{{ www_fqdn }}.chain.pem
     SSLCertificateKeyFile /etc/letsencrypt/live/{{ www_fqdn }}/privkey.pem
 
-    Redirect permanent "/owncloud" "https://patrickmacarthur.net/nextcloud"
+    Redirect permanent "/owncloud" "https://{{ www_fqdn }}/nextcloud"
     {% for r in www_redirects|default(dict()) %}Redirect "{{ r.src }}" "{{ r.dest }}"{% endfor %}
 
 </VirtualHost>

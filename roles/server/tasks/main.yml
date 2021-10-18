@@ -72,7 +72,7 @@
     cron_file: rsnapshot
     user: root
     state: present
-    minute: 0
+    minute: "0"
     hour: "*/4"
     job: /usr/bin/rsnapshot hourly
   tags:
@@ -87,8 +87,8 @@
     cron_file: rsnapshot
     user: root
     state: present
-    minute: 50
-    hour: 23
+    minute: "50"
+    hour: "23"
     job: /usr/bin/rsnapshot daily
   tags:
     - configuration
@@ -102,9 +102,9 @@
     cron_file: rsnapshot
     user: root
     state: present
-    minute: 0
-    hour: 22
-    weekday: 6
+    minute: "0"
+    hour: "22"
+    weekday: "6"
     job: /usr/bin/rsnapshot weekly
   tags:
     - configuration
@@ -135,6 +135,8 @@
     zone: public
     permanent: yes
     immediate: yes
+  vars:
+    ansible_python_interpreter: '/usr/bin/python3'
   tags:
     - configuration
     - firewall
@@ -162,6 +164,8 @@
     source: "{{ item }}"
     zone: localisp
   with_items: "{{ allowed_ipv4_ranges }}"
+  vars:
+    ansible_python_interpreter: '/usr/bin/python3'
   tags:
     - configuration
     - firewall

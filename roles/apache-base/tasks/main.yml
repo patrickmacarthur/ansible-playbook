@@ -13,7 +13,7 @@
 
 - name: set PHP timezone
   lineinfile:
-    dest: "/etc/php/7.0/apache2/conf.d/timezone.ini"
+    dest: "/etc/php/{{ php_ver }}/apache2/conf.d/timezone.ini"
     create: yes
     regexp: '^date\.timezone'
     line: "date.timezone = America/New_York"
@@ -61,6 +61,11 @@
     immediate: yes
     zone: public
     service: http
+  vars:
+    ansible_python_interpreter: '/usr/bin/python3'
+  with_items:
+    - public
+    - localisp
   tags:
     - configuration
     - firewall

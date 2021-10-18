@@ -5,17 +5,17 @@
   package:
     state: present
     name:
-      - php7.0-curl
+      - "php{{ php_ver }}-curl"
       - "{{ pkg_php_gd }}"
-      - php7.0-intl
+      - "php{{ php_ver }}-intl"
       - php-imagick
-      - php7.0-json
-      - php7.0-mbstring
-      - php7.0-mcrypt
+      - "php{{ php_ver }}-json"
+      - "php{{ php_ver }}-mbstring"
+      - "php{{ php_ver }}-mcrypt"
       - "{{ pkg_php_mysql }}"
       - "{{ pkg_php_pdo }}"
-      - php7.0-xml
-      - php7.0-zip
+      - "php{{ php_ver }}-xml"
+      - "php{{ php_ver }}-zip"
   notify: restart apache web server
   tags:
     - packages
@@ -88,7 +88,7 @@
     - env
     - headers
     - mime
-    - php7.0
+    - "php{{ php_ver }}"
     - rewrite
   when: "'debian' in ansible_os_family|lower"
   notify: reload apache web server

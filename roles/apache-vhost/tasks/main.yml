@@ -64,7 +64,11 @@
     permanent: yes
     immediate: yes
     zone: public
-    service: https
+  vars:
+    ansible_python_interpreter: '/usr/bin/python3'
+  with_items:
+    - public
+    - localisp
   tags:
     - configuration
     - firewall

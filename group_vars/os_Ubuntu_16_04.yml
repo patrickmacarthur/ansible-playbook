@@ -17,6 +17,7 @@ dev: dev
 dir_apache2_conf: /etc/apache2
 dir_opendkim_keys: /etc/dkimkeys
 grp_sudo: sudo
+php_ver: "7.0"
 pkg_apache2: apache2
 pkg_bind_utils: bind9utils
 pkg_clamd: clamav-daemon
