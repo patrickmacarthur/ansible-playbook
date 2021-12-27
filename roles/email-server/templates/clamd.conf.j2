@@ -62,7 +62,7 @@ LogFacility LOG_MAIL
 # This option allows you to save a process identifier of the listening
 # daemon (main thread).
 # Default: disabled
-PidFile /var/run/clamd.scan/clamd.pid
+PidFile {{ clamd_pid | default('/var/run/clamd.scan/clamd.pid') }}
 
 # Optional path to the global temporary directory.
 # Default: system specific (usually /tmp or /var/tmp).

@@ -5,6 +5,7 @@ clamav_milter_group: clamilt
 clamav_milter_socket: /var/run/clamav-milter/clamav-milter.sock
 clamav_milter_user: clamilt
 clamd_config: /etc/clamd.d/scan.conf
+clamd_pid: /var/run/clamd.scan/clamd.pid
 clamd_service: clamd@scan
 clamscan_user: clamscan
 clamscan_group: clamscan

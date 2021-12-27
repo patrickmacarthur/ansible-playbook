@@ -6,6 +6,7 @@ clamav_milter_socket: /run/clamav/clamav-milter.ctl
 clamav_milter_user: clamav
 clamd_config: /etc/clamav/clamd.conf
 clamd_service: clamav-daemon.service
+clamd_pid: /run/clamav/clamd.pid
 clamscan_user: clamav
 clamscan_group: clamav
 clamscan_socket: /run/clamav/clamd.ctl

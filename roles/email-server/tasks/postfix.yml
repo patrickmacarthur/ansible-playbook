@@ -64,6 +64,7 @@
     group: root
   notify: Reload postfix
   tags:
+    - antivirus
     - configuration
     - postfix
     - mail
