@@ -92,7 +92,6 @@
       - bash
       - bash-completion
       - "{{ pkg_bind_utils }}"
-      - deltarpm
       - dos2unix
       - "{{ firewall_package }}"
       - git

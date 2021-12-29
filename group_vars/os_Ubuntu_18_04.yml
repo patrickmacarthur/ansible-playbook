@@ -1,3 +1,4 @@
+cmd_update_initramfs: update-initramfs -k all -u
 development_packages:
   - build-essential
 dev: dev
@@ -33,3 +34,4 @@ pkg_xorg_server: xserver-xorg
 pkg_xorg_video: xserver-xorg-video
 polkitd_user: root
 svc_display_mgr: gdm
+svc_sshd: ssh

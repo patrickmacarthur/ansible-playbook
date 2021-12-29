@@ -10,6 +10,7 @@ clamd_service: clamd@scan
 clamscan_user: clamscan
 clamscan_group: clamscan
 clamscan_socket: /var/run/clamd.scan/clamd.sock
+cmd_update_initramfs: dracut --regenerate-all --force
 development_packages:
  - "@development"
  - "kernel-devel-{{ ansible_kernel }}"
@@ -71,6 +72,7 @@ qemu_guest_agent_service: qemu-guest-agent
 svc_apache2: httpd
 svc_display_mgr: gdm
 svc_mysql: mariadb
+svc_sshd: sshd
 user_apache: httpd
 user_spamd: spamd
 user_spamass_milter: sa-milt

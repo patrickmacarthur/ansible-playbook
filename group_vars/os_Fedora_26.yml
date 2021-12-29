@@ -4,6 +4,7 @@ development_packages:
  - "@c-development"
  - "kernel-devel-{{ ansible_kernel }}"
 dev: devel
+cmd_update_initramfs: dracut --regenerate-all --force
 grp_sudo: wheel
 pkg_bind_utils: bind-utils
 pkg_gnome: "@gnome-desktop-environment"
@@ -35,3 +36,4 @@ pkg_xorg_server: xorg-x11-server-Xorg
 pkg_xorg_video: xorg-x11-drv
 polkitd_user: polkitd
 svc_display_mgr: gdm
+svc_sshd: sshd

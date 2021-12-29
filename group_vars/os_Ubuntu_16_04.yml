@@ -10,6 +10,7 @@ clamd_pid: /run/clamav/clamd.pid
 clamscan_user: clamav
 clamscan_group: clamav
 clamscan_socket: /run/clamav/clamd.ctl
+cmd_update_initramfs: update-initramfs -k all -u
 development_packages:
   - build-essential
 dev: dev
@@ -70,6 +71,7 @@ polkitd_user: root
 svc_apache2: apache2
 svc_display_mgr: gdm
 svc_mysql: mysql
+svc_sshd: ssh
 user_apache: www-data
 user_spamd: debian-spamd
 user_spamass_milter: spamass-milter
