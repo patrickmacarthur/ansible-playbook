@@ -59,7 +59,7 @@
 - name: Checkout all enabled repositories
   command: mr checkout
   environment:
-    XDG_CONFIG_HOME: "$HOME/.config"
+    XDG_CONFIG_HOME: "{{ homedir }}/.config"
   become: no
   changed_when: "mr_checkout.stdout is search('mr checkout: finished \\(.*\\d+ ok')"
   register: mr_checkout

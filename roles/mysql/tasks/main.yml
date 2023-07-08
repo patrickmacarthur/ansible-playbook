@@ -40,7 +40,7 @@
 
 - name: remove mysql server anonymous users
   mysql_user:
-      name:
+      name: ""
       host: "{{ item }}"
       state: absent
       login_user: root

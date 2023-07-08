@@ -47,11 +47,9 @@
     CustomLog /var/log/apache2/ssl_request_log \
           "%t %h %{SSL_PROTOCOL}x %{SSL_CIPHER}x \"%r\" %b"
 
-    SSLCertificateFile /etc/letsencrypt/live/{{ www_fqdn }}/fullchain.pem
-    #SSLCertificateChainFile /etc/ssl/{{ www_fqdn }}.chain.pem
-    SSLCertificateKeyFile /etc/letsencrypt/live/{{ www_fqdn }}/privkey.pem
+    SSLCertificateFile /etc/ssl/{{ www_fqdn }}.fullchain.pem
+    SSLCertificateKeyFile /etc/ssl/private/{{ www_fqdn }}.key
 
-    Redirect permanent "/owncloud" "https://patrickmacarthur.net/nextcloud"
     {% for r in www_redirects|default(dict()) %}Redirect "{{ r.src }}" "{{ r.dest }}"{% endfor %}
 
 </VirtualHost>

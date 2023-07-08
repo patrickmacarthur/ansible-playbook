@@ -699,7 +699,7 @@ sender_bcc_maps = hash:/etc/postfix/bcc_map
 milter_default_action = tempfail
 milter_protocol = 2
 milter_connect_macros = j {daemon_name} v {if_name} _
-smtpd_milters = inet:127.0.0.1:8891 unix:/var/run/opendmarc/opendmarc.sock unix:/var/spool/postfix/spamass/spamass.sock unix:{{ clamav_milter_socket }}
+smtpd_milters = inet:127.0.0.1:8891 unix:/var/run/opendmarc/opendmarc.sock unix:/var/spool/postfix/spamass/spamass.sock
 non_smtpd_milters = inet:127.0.0.1:8891 unix:/var/run/opendmarc/opendmarc.sock
 
 # TLS
@@ -708,7 +708,10 @@ smtpd_tls_key_file=/etc/ssl/private/{{ www_fqdn }}.key
 smtpd_tls_auth_only=yes
 smtpd_use_tls=yes
 smtpd_tls_security_level=may
-smtpd_tls_protocols=!SSLv2,!SSLv3
+smtpd_tls_mandatory_protocols = >=TLSv1.2
+smtp_tls_mandatory_protocols = >=TLSv1.2
+smtpd_tls_protocols = >=TLSv1.2
+smtp_tls_protocols = >=TLSv1.2
 smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
 smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
 

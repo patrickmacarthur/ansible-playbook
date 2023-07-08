@@ -32,7 +32,6 @@
    - apache-base
    - letsencrypt-cert
    - apache-vhost
-   - taskwarrior-server
    - mysql
    - nextcloud
    - email-server

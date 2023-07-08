@@ -142,6 +142,8 @@
     - firewall
     - server
 
+- import_tasks: fail2ban.yml
+
 - name: Create localisp zone
   command: firewall-cmd --permanent --new-zone=localisp
   args:
@@ -171,5 +173,4 @@
     - firewall
     - server
 
-- import_tasks: fail2ban.yml
 - import_tasks: ssh.yml

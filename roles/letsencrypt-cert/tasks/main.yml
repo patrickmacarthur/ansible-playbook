@@ -1,8 +1,16 @@
 ---
 - name: Create LetsEncrypt account private key
-  command: openssl genrsa -out /etc/ssl/private/account.key 2048
-  args:
-      creates: /etc/ssl/private/account.key
+  openssl_privatekey:
+    curve: secp384r1
+    force: false
+    format: auto_ignore
+    owner: root
+    group: root
+    mode: '600'
+    path: /etc/ssl/private/account.key
+    size: 4096
+    state: present
+    type: RSA
   tags:
     - certificates
 
@@ -13,34 +21,43 @@
       - "mailto:{{ user }}@{{ mail_domain }}"
     acme_directory: "https://acme-v02.api.letsencrypt.org/directory"
     acme_version: 2
-    allow_creation: no
+    allow_creation: yes
     state: present
     terms_agreed: yes
   register: letsencrypt_account
   tags:
-      -certificates
-
-- name: Install openssl configuration for CSR generation
-  template:
-    src: openssl.cnf.j2
-    dest: /etc/ssl/{{ www_fqdn }}.cnf
-    owner: root
-    group: root
-    mode: 0644
-  tags:
     - certificates
 
 - name: Create LetsEncrypt certificate private key
-  command: openssl genrsa -out /etc/ssl/private/{{ www_fqdn }}.key 2048
-  args:
-      creates: /etc/ssl/private/{{ www_fqdn }}.key
+  openssl_privatekey:
+    curve: secp384r1
+    force: false
+    format: auto_ignore
+    owner: root
+    group: root
+    mode: '600'
+    path: /etc/ssl/private/{{ www_fqdn }}.key
+    size: 4096
+    state: present
+    type: RSA
   tags:
     - certificates
 
 - name: Create LetsEncrypt CSR
-  command: "openssl req -new -sha256 -batch -subj /CN={{ www_fqdn }}/ -key /etc/ssl/private/{{ www_fqdn }}.key -out /etc/ssl/{{ www_fqdn }}.csr -config /etc/ssl/{{ www_fqdn }}.cnf"
-  args:
-      creates: /etc/ssl/{{ www_fqdn }}.csr
+  openssl_csr:
+    common_name: "{{ www_fqdn }}"
+    digest: sha256
+    owner: root
+    group: root
+    mode: '600'
+    key_usage:
+      - digitalSignature
+      - keyEncipherment
+    key_usage_critical: true
+    path: "/etc/ssl/{{ www_fqdn }}.csr"
+    privatekey_path: "/etc/ssl/private/{{ www_fqdn }}.key"
+    state: present
+    subject_alt_name: "{{www_aliases|map('regex_replace','^(.+)$', 'DNS:\\1') }}"
   tags:
     - certificates
 

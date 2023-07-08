@@ -6,12 +6,13 @@
     state: present
     name:
       - "php{{ php_ver }}-curl"
-      - "{{ pkg_php_gd }}"
+      - "php{{ php_ver }}-bcmath"
+      - "php{{ php_ver }}-gd"
+      - "php{{ php_ver }}-gmp"
       - "php{{ php_ver }}-intl"
       - php-imagick
-      - "php{{ php_ver }}-json"
+      - php-json
       - "php{{ php_ver }}-mbstring"
-      - "php{{ php_ver }}-mcrypt"
       - "{{ pkg_php_mysql }}"
       - "{{ pkg_php_pdo }}"
       - "php{{ php_ver }}-xml"
@@ -19,6 +20,36 @@
   notify: restart apache web server
   tags:
     - packages
+    - nextcloud
+
+- name: Test for nextcloud installation
+  stat: "path={{ nextcloud_dir }}/public.php"
+  register: nextcloud_public_php
+  tags:
+    - configuration
+    - nextcloud
+
+- name: download nextcloud
+  get_url:
+    dest: /var/www/nextcloud.zip
+    url: https://download.nextcloud.com/server/releases/nextcloud-25.0.8.zip
+    checksum: sha256:https://download.nextcloud.com/server/releases/nextcloud-25.0.8.zip.sha256
+  when: not nextcloud_public_php.stat.exists
+  tags:
+    - apache
+    - nextcloud
+
+- name: untar nextcloud
+  unarchive:
+    src: /var/www/nextcloud.zip
+    dest: /var/www
+    remote_src: true
+    owner: "{{ user_apache }}"
+    group: "{{ user_apache }}"
+    mode: u=rwX,g=rX
+    creates: /var/www/nextcloud/public.php
+  tags:
+    - apache
     - nextcloud
 
 - name: ensure apache web server can connect to MySQL
@@ -39,6 +70,8 @@
     state: present
     login_user: root
     login_password: "{{ mysql_password }}"
+    collation: utf8mb4_general_ci
+    encoding: utf8mb4
   tags:
     - configuration
     - nextcloud
@@ -57,14 +90,6 @@
     - nextcloud
     - database
 
-- name: Test for nextcloud configuration file
-  stat: "path={{ nextcloud_config_dir }}/config.php"
-  register: nextcloud_config_file
-  tags:
-    - configuration
-    - nextcloud
-    - database
-
 - name: set up nextcloud configuration file
   template:
     src: config.php.j2
@@ -73,7 +98,6 @@
     group: "{{ user_apache }}"
     mode: 0660
     setype: httpd_sys_rw_content_t
-  when: not nextcloud_config_file.stat.exists
   tags:
     - configuration
     - nextcloud
@@ -88,9 +112,18 @@
     - env
     - headers
     - mime
-    - "php{{ php_ver }}"
     - rewrite
   when: "'debian' in ansible_os_family|lower"
+  notify: reload apache web server
+  tags:
+    - apache
+    - nextcloud
+
+- name: enable PHP for apache
+  apache2_module:
+    name: "{{ php_ver }}"
+    identifier: "php_module"
+    state: present
   notify: reload apache web server
   tags:
     - apache

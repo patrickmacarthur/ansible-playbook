@@ -103,7 +103,7 @@
       - ntfs-3g
       - "{{ pkg_openssh_clients }}"
       - openssh-server
-      - python
+      - python3
       - rkhunter
       - sudo
       - tmux
@@ -129,7 +129,6 @@
 - name: Install packages not available on RHEL
   package:
     name:
-      - python3
       - vcsh
     state: present
   when: ansible_os_family != "RedHat" or ansible_distribution == "Fedora"

@@ -24,6 +24,7 @@
     group: "{{ user }}"
     groups: "{{ user_system_groups }}"
     password: "{{ user_password }}"
+    shell: /bin/bash
   tags:
     - configuration
 
