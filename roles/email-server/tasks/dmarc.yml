@@ -14,7 +14,7 @@
     dest: /etc/opendmarc.conf
     owner: root
     group: root
-    mode: 0644
+    mode: '644'
   notify: Restart opendmarc
   tags:
     - configuration
@@ -27,7 +27,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0644
+    mode: '755'
   tags:
     - dmarc
     - email
@@ -38,7 +38,7 @@
     dest: /etc/opendmarc/ignore.hosts
     owner: root
     group: root
-    mode: 0644
+    mode: '644'
   notify: Restart opendmarc
   tags:
     - configuration
@@ -85,7 +85,7 @@
     dest: /usr/local/sbin/dmarc_report_script
     owner: root
     group: opendmarc
-    mode: 0750
+    mode: '750'
   tags:
     - cron
     - dmarc

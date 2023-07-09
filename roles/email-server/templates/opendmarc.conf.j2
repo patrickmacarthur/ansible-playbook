@@ -1,5 +1,5 @@
 AuthservID {{ inventory_hostname }}
-PidFile /var/run/opendmarc.pid #Debian default
+PidFile /run/opendmarc/opendmarc.pid
 RejectFailures false
 Syslog true
 SyslogFacility mail
@@ -7,4 +7,5 @@ TrustedAuthservIDs {{ groups['servers']|join(' ') }}
 UMask 0002
 UserID opendmarc:opendmarc
 IgnoreHosts /etc/opendmarc/ignore.hosts
-HistoryFile /var/run/opendmarc/opendmarc.dat
+HistoryFile /run/opendmarc/opendmarc.dat
+Socket /run/opendmarc/opendmarc.sock
