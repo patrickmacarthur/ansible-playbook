@@ -27,6 +27,7 @@
     - imaps
     - managesieve
     - smtp-submission
+    - smtp
   notify: Reload firewalld
   tags:
     - mail
