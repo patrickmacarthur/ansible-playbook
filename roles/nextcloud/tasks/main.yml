@@ -13,6 +13,7 @@
       - php-imagick
       - php-json
       - "php{{ php_ver }}-mbstring"
+      - "php{{ php_ver }}-opcache"
       - "{{ pkg_php_mysql }}"
       - "{{ pkg_php_pdo }}"
       - "php{{ php_ver }}-xml"
@@ -22,18 +23,47 @@
     - packages
     - nextcloud
 
+- name: install nextcloud-specific PHP config
+  copy:
+    state: present
+    source: php-99-nextcloud.ini
+    dest: /etc/php/{{ php_ver }}/conf.d/99-nextcloud.ini
+    mode: 0644
+    owner: root
+    group: root
+  notify: restart apache web server
+  tags:
+    - configuration
+    - apache
+    - nextcloud
+
+- name: install htaccess file in DocumentRoot
+  copy:
+    state: present
+    source: apache-root-htaccess
+    dest: /var/www/html/.htaccess
+    mode: 0644
+    owner: root
+    group: root
+  notify: restart apache web server
+  tags:
+    - configuration
+    - apache
+    - nextcloud
+
 - name: Test for nextcloud installation
   stat: "path={{ nextcloud_dir }}/public.php"
   register: nextcloud_public_php
   tags:
     - configuration
+    - apache
     - nextcloud
 
 - name: download nextcloud
   get_url:
     dest: /var/www/nextcloud.zip
-    url: https://download.nextcloud.com/server/releases/nextcloud-25.0.8.zip
-    checksum: sha256:https://download.nextcloud.com/server/releases/nextcloud-25.0.8.zip.sha256
+    url: https://download.nextcloud.com/server/releases/nextcloud-28.0.3.zip
+    checksum: sha256:https://download.nextcloud.com/server/releases/nextcloud-28.0.3.zip.sha256
   when: not nextcloud_public_php.stat.exists
   tags:
     - apache

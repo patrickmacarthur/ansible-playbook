@@ -8,6 +8,10 @@
     </IfModule>
 </Directory>
 
+<Directory /var/www/html>
+    AllowOverride All
+</Directory>
+
 <IfModule mod_ssl.c>
 <VirtualHost *:80>
     ServerName {{ www_fqdn }}
