@@ -58,6 +58,7 @@
     privatekey_path: "/etc/ssl/private/{{ www_fqdn }}.key"
     state: present
     subject_alt_name: "{{www_aliases|map('regex_replace','^(.+)$', 'DNS:\\1') }}"
+  register: letsencrypt_csr
   tags:
     - certificates
 
