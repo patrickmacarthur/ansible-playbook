@@ -5,9 +5,10 @@
   package:
     state: present
     name:
+      - cargo
       - "{{ development_packages }}"
-      - "{{ pkg_mod_wsgi }}"
-      - python
+      - libmariadb-dev
+      - libmariadb-dev-compat
       - python-{{ dev }}
       - "{{ pkg_virtualenv }}"
   notify: restart apache web server
@@ -32,13 +33,18 @@
     name: syncserver
     state: present
     comment: "Firefox Sync user"
-    home: /opt/mozilla-services/syncserver
-    createhome: no
+    home: /home/syncserver
+    createhome: yes
     group: syncserver
     system: yes
   tags:
     - configuration
     - syncserver
+
+- name: Install diesel CLI
+  become: yes
+  command:
+    name: diesel-cli
 
 - name: Create firefox sync checkout directory
   become: yes
