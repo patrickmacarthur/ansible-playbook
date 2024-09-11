@@ -54,13 +54,30 @@
     - services
     - apache
 
-- name: ensure httpd ports are open in firewalld
+- name: ensure http port are open in firewalld
   firewalld:
     state: enabled
     permanent: yes
     immediate: yes
     zone: "{{ item }}"
     service: http
+  vars:
+    ansible_python_interpreter: '/usr/bin/python3'
+  with_items:
+    - public
+    - localisp
+  tags:
+    - configuration
+    - firewall
+    - apache
+
+- name: ensure https port are open in firewalld
+  firewalld:
+    state: enabled
+    permanent: yes
+    immediate: yes
+    zone: "{{ item }}"
+    service: https
   vars:
     ansible_python_interpreter: '/usr/bin/python3'
   with_items:
