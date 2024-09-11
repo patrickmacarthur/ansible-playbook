@@ -1,0 +1,81 @@
+# This playbook is untested because it's a lot easier to just do the upgrade
+# from the Web interface.
+
+- name: Common system setup
+  hosts: all
+  user: "{{ user }}"
+  become: yes
+  become_method: sudo
+
+  tasks:
+    - name: create OS group
+      group_by:
+        key: "os_{{ ansible_distribution }}_{{ (ansible_os_family == 'RedHat')|ternary(ansible_distribution_major_version, ansible_distribution_version)|replace('.','_') }}"
+      changed_when: False
+      tags:
+        - always
+
+- name: Enable maintenance mode on source system
+  hosts: "{{ src_host }}"
+  user: "{{ user }}"
+  become: yes
+  become_method: sudo
+
+  tasks:
+    - name: Enable maintenance mode
+      command: sudo -u www-data php occ maintenance:mode --on
+      args:
+        chdir: /var/www/nextcloud
+
+    #- name: Wait for clients to register maintenance
+    #  wait_for:
+    #    timeout: 420
+    #  delegate_to: localhost
+
+    - name: Dump MySQL database
+      mysql_db:
+        name: nextcloud
+        login_user: root
+        login_password: "{{ mysql_password }}"
+        encoding: utf8mb4
+        collation: utf8mb4_bin
+        state: dump
+        target: /root/nextcloud.sql.xz
+
+    - name: Copy dump to control system
+      fetch:
+        src: /root/nextcloud.sql.xz
+        dest: sqldump/
+        flat: yes
+
+    - name: Copy nextcloud installation from source host
+      synchronize:
+        mode: pull
+        src: /var/www/nextcloud
+        dest: /var/www
+      delegate_to: "{{ dest_host }}"
+
+
+- name: Install nextcloud on destination system
+  hosts: "{{ dest_host }}"
+  user: "{{ user }}"
+  become: yes
+  become_method: sudo
+          
+  tasks:
+    - name: Copy nextcloud database dump to destination
+      copy:
+        src: sqldump/nextcloud.sql.xz
+        dest: /root/nextcloud.sql.xz
+
+    - name: import nextcloud mysql database
+      mysql_db:
+        name: nextcloud
+        login_user: root
+        login_password: "{{ mysql_password }}"
+        encoding: utf8mb4
+        collation: utf8mb4_bin
+        state: import
+        target: /root/nextcloud.sql.xz
+      vars:
+        ansible_python_interpreter: python3
