@@ -72,6 +72,7 @@
     dest: /etc/ssl/{{ www_fqdn }}.crt
     chain_dest: /etc/ssl/{{ www_fqdn }}.chain.pem
     fullchain_dest: /etc/ssl/{{ www_fqdn }}.fullchain.pem
+    modify_account: no
     challenge: http-01
     remaining_days: 20
     terms_agreed: yes
